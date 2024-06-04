@@ -21,26 +21,26 @@ elif [ $1 = "-local" ]; then
     pip install --upgrade pip
     pip install -r ./requirements.txt
 
-    black linga tests
-    pylint --fail-under=9.9 linga tests
-    pytest --cov-fail-under=95 --cov linga -v tests
+    black whisper_flow tests
+    pylint --fail-under=9.9 whisper_flow tests
+    pytest --cov-fail-under=95 --cov whisper_flow -v tests
 elif [ $1 = "-test" ]; then
     trap 'abort' 0
     set -e
     
     echo "Running format, linter and tests"
     source .venv/bin/activate
-    black linga tests
-    pylint --fail-under=9.9 linga tests
-    pytest --cov-fail-under=95 --cov --log-cli-level=INFO linga -v tests
+    black whisper_flow tests
+    pylint --fail-under=9.9 whisper_flow tests
+    pytest --cov-fail-under=95 --cov --log-cli-level=INFO whisper_flow -v tests
 elif [ $1 = "-docker" ]; then
     echo "Building and running docker image"
-    docker stop linga-container
-    docker rm linga-container
-    docker rmi linga-image
+    docker stop whisper_flow-container
+    docker rm whisper_flow-container
+    docker rmi whisper_flow-image
     # build docker and run
-    docker build --tag linga-image --build-arg CACHEBUST=$(date +%s) .
-    docker run --name linga-container -p 8888:8888 -d linga-image
+    docker build --tag whisper_flow-image --build-arg CACHEBUST=$(date +%s) .
+    docker run --name whisper_flow-container -p 8888:8888 -d whisper_flow-image
 else
   echo "Wrong argument is provided. Usage:
     1. '-local' to build local environment
