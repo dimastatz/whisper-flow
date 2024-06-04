@@ -21,26 +21,26 @@ elif [ $1 = "-local" ]; then
     pip install --upgrade pip
     pip install -r ./requirements.txt
 
-    black whisper_flow tests
-    pylint --fail-under=9.9 whisper_flow tests
-    pytest --cov-fail-under=95 --cov whisper_flow -v tests
+    black whisperflow tests
+    pylint --fail-under=9.9 whisperflow tests
+    pytest --cov-fail-under=95 --cov whisperflow -v tests
 elif [ $1 = "-test" ]; then
     trap 'abort' 0
     set -e
     
     echo "Running format, linter and tests"
     source .venv/bin/activate
-    black whisper_flow tests
-    pylint --fail-under=9.9 whisper_flow tests
-    pytest --cov-fail-under=95 --cov --log-cli-level=INFO whisper_flow -v tests
+    black whisperflow tests
+    pylint --fail-under=9.9 whisperflow tests
+    pytest --cov-fail-under=95 --cov --log-cli-level=INFO whisperflow -v tests
 elif [ $1 = "-docker" ]; then
     echo "Building and running docker image"
-    docker stop whisper_flow-container
-    docker rm whisper_flow-container
-    docker rmi whisper_flow-image
+    docker stop whisperflow-container
+    docker rm whisperflow-container
+    docker rmi whisperflow-image
     # build docker and run
-    docker build --tag whisper_flow-image --build-arg CACHEBUST=$(date +%s) .
-    docker run --name whisper_flow-container -p 8888:8888 -d whisper_flow-image
+    docker build --tag whisperflow-image --build-arg CACHEBUST=$(date +%s) .
+    docker run --name whisperflow-container -p 8888:8888 -d whisperflow-image
 else
   echo "Wrong argument is provided. Usage:
     1. '-local' to build local environment

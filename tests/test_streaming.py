@@ -1,6 +1,6 @@
 """ test scenario module """
 
-import whisper_flow.streaming as st
+import whisperflow.streaming as st
 
 
 def test_streaming():
