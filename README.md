@@ -24,6 +24,11 @@ Streaming content is sent as a series of sequential data packets, or 'chunks,' w
 ### Stream Windowing
 In scenarios involving time-streaming, it's typical to perform operations on data within specific time frames known as temporal windows. One common approach is using the [tumbling window](https://learn.microsoft.com/en-us/azure/stream-analytics/stream-analytics-window-functions#tumbling-window) technique, which involves gathering events into segments until a certain condition is met.
 
+<div align="center">
+<img src="/docs/imgs/streaming.png"> 
+<div>Tumbling Window</div>
+</div><br/>
+
 [TBD]()
 
 
