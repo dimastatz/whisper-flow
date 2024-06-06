@@ -48,7 +48,7 @@ In real-time streaming, transcripts are produced in partial results. Whisper Flo
 | changing                        |   5.95   | True      |
 | changing our                    |   6.65   | True      |
 | changing our mind               |   7.25   | True      |
-| changing our mind               |   7.5    | False     |
+| changing our mind               |   7.55   | False     |
 
 ## How To Use it
 
