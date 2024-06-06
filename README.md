@@ -29,7 +29,16 @@ In scenarios involving time-streaming, it's typical to perform operations on dat
 <div>Tumbling Window</div>
 </div><br/>
 
-[TBD]()
+### Result
+In real-time streaming, transcripts are produced in partial results. Whisper Flow splits the audio stream into segments based on natural speech patterns, like speaker changes or pauses. The transcription is sent to your application as a series of events, with each response containing more transcribed speech until the entire segment is complete.
+
+| Transcript        | EndTime  | IsPartial |
+| :---------------- | :------: | --------: |
+| Python Hat        |   True   | 23.99     |
+| SQL Hat           |   True   | 23.99     |
+| Codecademy Tee    |  False   | 19.99     |
+| Codecademy Hoodie |  False   | 42.99     |
+
 
 
 ## How To Use it
