@@ -32,23 +32,23 @@ In scenarios involving time-streaming, it's typical to perform operations on dat
 ### (Partial) Results
 In real-time streaming, transcripts are produced in partial results. Whisper Flow splits the audio stream into segments based on natural speech patterns, like speaker changes or pauses. The transcription is sent to your application as a series of events, with each response containing more transcribed speech until the entire segment is complete.
 
-| Transcript                      | EndTime  | IsPartial |
-| :------------------------------ | :------: | --------: |
-| Reality                         |   0.55   | True      |
-| Reality is                      |   1.15   | True      |
-| Reality is created              |   1.50   | True      |
-| Reality is created by the       |   2.10   | True      |
-| Reality is created by the mind  |   2.65   | True      |
-| Reality is created by the mind  |   3.15   | False     |
-| we can                          |   3.55   | True      |
-| we can change                   |   3.85   | True      |
-| we can change reality           |   4.40   | True      |
-| we can change reality by        |   5.10   | True      |
-| we can change reality by        |   5.55   | False     |
-| changing                        |   5.95   | True      |
-| changing our                    |   6.65   | True      |
-| changing our mind               |   7.25   | True      |
-| changing our mind               |   7.55   | False     |
+| Transcript                                    | EndTime  | IsPartial |
+| :-------------------------------------------- | :------: | --------: |
+| Reality                                       |   0.55   | True      |
+| Reality is                                    |   1.15   | True      |
+| Reality is created                            |   1.50   | True      |
+| Reality is created by the                     |   2.10   | True      |
+| Reality is created by the mind                |   2.65   | True      |
+| Reality is created by the mind                |   3.15   | False     |
+| we can                                        |   3.55   | True      |
+| we can change                                 |   3.85   | True      |
+| we can change reality                         |   4.40   | True      |
+| we can change reality by                      |   5.10   | True      |
+| we can change reality by changing             |   5.55   | True      |
+| we can change reality by changing our         |   5.95   | True      |
+| we can change reality by changing our mind    |   6.65   | True      |
+| we can change reality by changing our mind    |   6.65   | False     |
+
 
 ## How To Use it
 
