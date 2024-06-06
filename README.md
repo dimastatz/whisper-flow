@@ -18,8 +18,11 @@ OpenAI [Whisper](https://github.com/openai/whisper) is a versatile speech recogn
 ### Whisper Flow 
 Using Whisper Flow, you can generate real-time transcriptions for your media content. Unlike batch transcriptions, where media files are uploaded and processed, streaming media is delivered to Whisper Flow in real time, and the service returns a transcript immediately.
 
-### How it works
+### What is Streaming
 Streaming content is sent as a series of sequential data packets, or 'chunks,' which Whisper Flow transcribes on the spot. The benefits of using streaming over batch processing include the ability to incorporate real-time speech-to-text functionality into your applications and achieving faster transcription times. However, this speed may come at the expense of accuracy in some cases.
+
+### Stream Windowing
+In scenarios involving time-streaming, it's typical to perform operations on data within specific time frames known as temporal windows. One common approach is using the [tumbling window](https://learn.microsoft.com/en-us/azure/stream-analytics/stream-analytics-window-functions#tumbling-window) technique, which involves gathering events into segments until a certain condition is met.
 
 [TBD]()
 
