@@ -29,7 +29,7 @@ In scenarios involving time-streaming, it's typical to perform operations on dat
 <div>Tumbling Window</div>
 </div><br/>
 
-### (Partial) Results
+### Streaming Results
 In real-time streaming, transcripts are produced in partial results. Whisper Flow splits the audio stream into segments based on natural speech patterns, like speaker changes or pauses. The transcription is sent to your application as a series of events, with each response containing more transcribed speech until the entire segment is complete.
 
 | Transcript                                    | EndTime  | IsPartial |
@@ -49,6 +49,8 @@ In real-time streaming, transcripts are produced in partial results. Whisper Flo
 | we can change reality by changing our mind    |   6.65   | True      |
 | we can change reality by changing our mind    |   6.65   | False     |
 
+### Benchmarking
+The evaluation metrics used for comparing the performance of Whisper Flow are Word Error Rate (WER) and latency. Latency is measured as the time between two subsequent partial results, with the goal of achieving sub-second latency. We are not starting from scratch; several quality benchmarks have already been performed for different ASR engines. I will rely on the research article ["Benchmarking Open Source and Paid Services for Speech to Text"](https://www.frontiersin.org/articles/10.3389/fdata.2023.1210559/full) for guidance.
 
 ## How To Use it
 
