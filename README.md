@@ -35,17 +35,16 @@ Whisper Flow splits the audio stream into segments based on natural speech patte
 | Transcript                                    | EndTime  | IsPartial |
 | :-------------------------------------------- | :------: | --------: |
 | Reality                                       |   0.55   | True      |
-| Reality is                                    |   1.15   | True      |
-| Reality is created                            |   1.50   | True      |
-| Reality is created by the                     |   2.10   | True      |
-| Reality is created by the mind                |   2.65   | True      |
-| Reality is created by the mind                |   3.15   | False     |
-| we can                                        |   3.55   | True      |
-| we can change                                 |   3.85   | True      |
-| we can change reality                         |   4.40   | True      |
-| we can change reality by changing             |   5.05   | True      |
-| we can change reality by changing our mind    |   5.55   | True      |
-| we can change reality by changing our mind    |   6.15   | False     |
+| Reality is created                            |   1.05   | True      |
+| Reality is created by the                     |   1.50   | True      |
+| Reality is created by the mind                |   2.15   | True      |
+| Reality is created by the mind                |   2.65   | False     |
+| we can                                        |   3.05   | True      |
+| we can change                                 |   3.45   | True      |
+| we can change reality                         |   4.05   | True      |
+| we can change reality by changing             |   4.45   | True      |
+| we can change reality by changing our mind    |   5.05   | True      |
+| we can change reality by changing our mind    |   5.55   | False     |
 
 ### Benchmarking
 The evaluation metrics used for comparing the performance of Whisper Flow are Word Error Rate (WER) and latency. Latency is measured as the time between two subsequent partial results, with the goal of achieving sub-second latency. We are not starting from scratch; several quality benchmarks have already been performed for different ASR engines. I will rely on the research article ["Benchmarking Open Source and Paid Services for Speech to Text"](https://www.frontiersin.org/articles/10.3389/fdata.2023.1210559/full) for guidance.
