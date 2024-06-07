@@ -43,11 +43,9 @@ Whisper Flow splits the audio stream into segments based on natural speech patte
 | we can                                        |   3.55   | True      |
 | we can change                                 |   3.85   | True      |
 | we can change reality                         |   4.40   | True      |
-| we can change reality by                      |   5.10   | True      |
-| we can change reality by changing             |   5.55   | True      |
-| we can change reality by changing our         |   5.95   | True      |
-| we can change reality by changing our mind    |   6.65   | True      |
-| we can change reality by changing our mind    |   6.65   | False     |
+| we can change reality by changing             |   5.05   | True      |
+| we can change reality by changing our mind    |   5.55   | True      |
+| we can change reality by changing our mind    |   6.15   | False     |
 
 ### Benchmarking
 The evaluation metrics used for comparing the performance of Whisper Flow are Word Error Rate (WER) and latency. Latency is measured as the time between two subsequent partial results, with the goal of achieving sub-second latency. We are not starting from scratch; several quality benchmarks have already been performed for different ASR engines. I will rely on the research article ["Benchmarking Open Source and Paid Services for Speech to Text"](https://www.frontiersin.org/articles/10.3389/fdata.2023.1210559/full) for guidance.
