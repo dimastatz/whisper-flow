@@ -30,7 +30,7 @@ In scenarios involving time-streaming, it's typical to perform operations on dat
 </div><br/>
 
 ### Streaming Results
-In real-time streaming, transcripts are produced in partial results. Whisper Flow splits the audio stream into segments based on natural speech patterns, like speaker changes or pauses. The transcription is sent to your application as a series of events, with each response containing more transcribed speech until the entire segment is complete.
+Whisper Flow splits the audio stream into segments based on natural speech patterns, like speaker changes or pauses. The transcription is sent back as a series of events, with each response containing more transcribed speech until the entire segment is complete.
 
 | Transcript                                    | EndTime  | IsPartial |
 | :-------------------------------------------- | :------: | --------: |
