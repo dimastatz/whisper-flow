@@ -1,6 +1,5 @@
 """ test scenario module """
 import pytest
-from httpx import AsyncClient
 from starlette.testclient import TestClient
 
 import whisperflow.streaming as st
@@ -22,7 +21,7 @@ def test_fast_api():
 @pytest.mark.asyncio
 async def test_ws():
     """test health api"""
-    async with AsyncClient(app=fs.app) as client:
-        async with client.websocket_connect("/ws") as websocket:
-            res = await websocket.receive_json()
-            assert res == {"msg": "Hello WebSocket"}
+    client = TestClient(fs.app)
+    with client.websocket_connect("/ws") as websocket:
+        data = websocket.receive_text()
+        assert data == "Hello, world!"

@@ -1,8 +1,6 @@
 """ fast api declaration """
 
-from fastapi import FastAPI
-from fastapi.websockets import WebSocket
-
+from fastapi import FastAPI, WebSocket
 
 app = FastAPI()
 
@@ -17,5 +15,5 @@ def health():
 async def websocket_endpoint(websocket: WebSocket):
     """webscoket implementation"""
     await websocket.accept()
-    await websocket.send_json({"msg": "Hello WebSocket"})
+    await websocket.send_text("Hello, world!")
     await websocket.close()
