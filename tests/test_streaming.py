@@ -23,5 +23,6 @@ async def test_ws():
     """test health api"""
     client = TestClient(fs.app)
     with client.websocket_connect("/ws") as websocket:
-        data = websocket.receive_text()
-        assert data == "Hello, world!"
+        websocket.send_text("Hello, world!")
+        data = websocket.receive_bytes()
+        assert data == b"Hello, world!"

@@ -15,5 +15,6 @@ def health():
 async def websocket_endpoint(websocket: WebSocket):
     """webscoket implementation"""
     await websocket.accept()
-    await websocket.send_text("Hello, world!")
+    data = await websocket.receive_text()
+    await websocket.send_bytes(data.encode("ascii"))
     await websocket.close()
