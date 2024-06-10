@@ -30,3 +30,5 @@ async def test_ws():
         websocket.send_text("Hello, world 2")
         data = websocket.receive_bytes()
         assert data == b"Hello, world 2"
+
+        websocket.close()
