@@ -1,5 +1,6 @@
 """ fast api declaration """
 
+import logging
 from fastapi import FastAPI, WebSocket
 
 app = FastAPI()
@@ -14,7 +15,11 @@ def health():
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     """webscoket implementation"""
-    await websocket.accept()
-    data = await websocket.receive_text()
-    await websocket.send_bytes(data.encode("ascii"))
-    await websocket.close()
+    try:
+        await websocket.accept()
+        while True:
+            data = await websocket.receive_text()
+            await websocket.send_bytes(data.encode("ascii"))
+    except Exception as exception:  # pylint: disable=broad-except
+        logging.error(exception)
+        await websocket.close()
