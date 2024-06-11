@@ -1,7 +1,16 @@
 """ transcriber """
 
+import os
+import torch
 import numpy as np
+import whisper
 from whisper import Whisper
+
+
+def get_model(file_name="tiny.en.pt") -> Whisper:
+    """load models from disk"""
+    path = os.path.join(os.path.dirname(__file__), f"./models/{file_name}")
+    return whisper.load_model(path).to("cuda" if torch.cuda.is_available() else "cpu")
 
 
 def transcribe_pcm_chunks(
