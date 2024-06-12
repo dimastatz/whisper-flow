@@ -3,7 +3,7 @@
 from queue import Queue
 
 
-async def get_all(queue: Queue) -> list:
+def get_all(queue: Queue) -> list:
     """get_all from queue"""
     res = []
     while queue and not queue.empty():

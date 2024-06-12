@@ -16,6 +16,9 @@ def test_streaming():
     res = st.get_all(queue)
     assert res == [1, 2]
 
+    res = st.get_all(None)
+    assert not res
+
 
 def test_fast_api():
     """test health api"""
