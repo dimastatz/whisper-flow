@@ -1,4 +1,6 @@
 """ test scenario module """
+from queue import Queue
+
 import pytest
 from starlette.testclient import TestClient
 
@@ -8,7 +10,11 @@ import whisperflow.fast_server as fs
 
 def test_streaming():
     """test hugging face image generation"""
-    assert st.run(1) == 2
+    queue = Queue()
+    queue.put(1)
+    queue.put(2)
+    res = st.get_all(queue)
+    assert res == [1, 2]
 
 
 def test_fast_api():
