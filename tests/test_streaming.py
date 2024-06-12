@@ -1,4 +1,6 @@
 """ test scenario module """
+
+import asyncio
 from queue import Queue
 
 import pytest
@@ -6,6 +8,12 @@ from starlette.testclient import TestClient
 
 import whisperflow.streaming as st
 import whisperflow.fast_server as fs
+
+
+@pytest.mark.asyncio
+async def test_simple():
+    """test asyncio"""
+    await asyncio.sleep(0.5)
 
 
 def test_streaming():
