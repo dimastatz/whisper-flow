@@ -8,3 +8,4 @@ pytest-cov==4.1.0
 pytest-asyncio==0.23.7
 openai-whisper==20231117
 pylint-fail-under==0.3.0
+uvicorn[standard]==0.30.1
