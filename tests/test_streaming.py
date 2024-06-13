@@ -13,13 +13,24 @@ import whisperflow.fast_server as fs
 @pytest.mark.asyncio
 async def test_simple():
     """test asyncio"""
-    await asyncio.sleep(0.01)
+
+    async def stop_transcribe():
+        await asyncio.sleep(1)
+        should_stop[0] = True
 
     items = Queue()
     items.put(1)
     should_stop = [True]
+    task_stop_transcribe = asyncio.create_task(stop_transcribe())
+
     await st.transcribe(should_stop, items)
     assert items.qsize() == 1
+
+    should_stop = [False]
+    await st.transcribe(should_stop, items)
+    assert items.qsize() == 0
+
+    await task_stop_transcribe
 
 
 def test_streaming():
