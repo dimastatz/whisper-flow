@@ -13,7 +13,9 @@ def get_all(queue: Queue) -> list:
     return res
 
 
-async def transcribe(should_stop: list, queue: Queue, callback: Callable[[list], str]):
+async def transcribe(
+    should_stop: list, queue: Queue, transcriber: Callable[[list], str]
+):
     """the transcription loop"""
 
     window, prev_result = [], ""
@@ -24,7 +26,7 @@ async def transcribe(should_stop: list, queue: Queue, callback: Callable[[list],
         if not window:
             continue
 
-        result = await callback(window)
+        result = await transcriber(window)
 
         if result == prev_result:
             window, prev_result = [], ""
