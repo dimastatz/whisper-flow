@@ -30,3 +30,5 @@ async def transcribe(
 
         if result == prev_result:
             window, prev_result = [], ""
+        else:
+            prev_result = result
