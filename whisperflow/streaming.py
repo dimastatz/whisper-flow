@@ -17,4 +17,6 @@ async def transcribe(should_stop: list, queue: Queue):
     while not should_stop[0]:
         await asyncio.sleep(0.01)
         items = get_all(queue)
-        print(items)
+
+        if not items:
+            continue

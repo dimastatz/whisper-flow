@@ -5,12 +5,13 @@ from fastapi import FastAPI, WebSocket
 
 
 app = FastAPI()
-version = "0.1"
+VERSION = "0.1.0"
+
 
 @app.get("/health", response_model=str)
 def health():
     """health function on API"""
-    return f"WhisperFlow V{version}"
+    return f"Whisper Flow V{VERSION}"
 
 
 @app.websocket("/ws")
