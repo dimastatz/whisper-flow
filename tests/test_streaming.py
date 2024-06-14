@@ -18,16 +18,20 @@ async def test_simple():
         await asyncio.sleep(1)
         should_stop[0] = True
 
+    async def dummy(items: list) -> str:
+        await asyncio.sleep(0.01)
+        print(items)
+
     items = Queue()
     items.put(1)
     should_stop = [True]
     task_stop_transcribe = asyncio.create_task(stop_transcribe())
 
-    await st.transcribe(should_stop, items)
+    await st.transcribe(should_stop, items, dummy)
     assert items.qsize() == 1
 
     should_stop = [False]
-    await st.transcribe(should_stop, items)
+    await st.transcribe(should_stop, items, dummy)
     assert items.qsize() == 0
 
     await task_stop_transcribe

@@ -2,6 +2,7 @@
 
 import asyncio
 from queue import Queue
+from typing import Callable
 
 
 def get_all(queue: Queue) -> list:
@@ -12,11 +13,18 @@ def get_all(queue: Queue) -> list:
     return res
 
 
-async def transcribe(should_stop: list, queue: Queue):
+async def transcribe(should_stop: list, queue: Queue, callback: Callable[[list], str]):
     """the transcription loop"""
+
+    window, prev_result = [], ""
     while not should_stop[0]:
         await asyncio.sleep(0.01)
-        items = get_all(queue)
+        window.extend(get_all(queue))
 
-        if not items:
+        if not window:
             continue
+
+        result = await callback(window)
+
+        if result == prev_result:
+            window, prev_result = [], ""
