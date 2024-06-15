@@ -19,7 +19,6 @@ async def test_simple():
 
     async def dummy_transcriber(items: list) -> str:
         await asyncio.sleep(0.1)
-
         if queue.qsize() == 0:
             should_stop[0] = True
         return str(len(items))

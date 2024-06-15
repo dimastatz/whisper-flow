@@ -1,24 +1,9 @@
 """ test transcriber """
 
-import os
-import json
 from jiwer import wer
+from tests.utils import load_resource
+
 import whisperflow.transcriber as tr
-
-
-def load_resource(name: str) -> dict:
-    "load resource"
-    result = {}
-    current_path = os.path.dirname(__file__)
-    resource_name = os.path.join(current_path, f"./resources/{name}")
-
-    with open(resource_name + ".wav", "br") as file:
-        result["audio"] = file.read()
-
-    with open(resource_name + ".json", "r", encoding="utf-8") as file:
-        result["expected"] = json.load(file)
-
-    return result
 
 
 def test_load_model():
