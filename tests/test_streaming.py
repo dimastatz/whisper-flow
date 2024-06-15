@@ -24,7 +24,11 @@ async def test_simple():
             should_stop[0] = True
         return str(len(items))
 
-    await st.transcribe(should_stop, queue, dummy_transcriber)
+    async def dummy_segment_closed(text: str) -> None:
+        await asyncio.sleep(0.01)
+        print(text)
+
+    await st.transcribe(should_stop, queue, dummy_transcriber, dummy_segment_closed)
     assert queue.qsize() == 0
 
 

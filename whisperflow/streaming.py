@@ -14,11 +14,14 @@ def get_all(queue: Queue) -> list:
 
 
 async def transcribe(
-    should_stop: list, queue: Queue, transcriber: Callable[[list], str]
+    should_stop: list,
+    queue: Queue,
+    transcriber: Callable[[list], str],
+    segment_closed: Callable[[str], None],
 ):
     """the transcription loop"""
-
     window, prev_result = [], ""
+
     while not should_stop[0]:
         await asyncio.sleep(0.01)
         window.extend(get_all(queue))
@@ -32,3 +35,4 @@ async def transcribe(
             window, prev_result = [], ""
         else:
             prev_result = result
+            await segment_closed(result)
