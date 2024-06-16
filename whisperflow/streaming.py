@@ -20,7 +20,7 @@ async def transcribe(
     segment_closed: Callable[[str], None],
 ):
     """the transcription loop"""
-    window, prev_result = [], ""
+    window, prev_result, cycles = [], "", 0
 
     while not should_stop[0]:
         await asyncio.sleep(0.01)
@@ -31,8 +31,16 @@ async def transcribe(
 
         result = await transcriber(window)
 
-        if result == prev_result:
-            window, prev_result = [], ""
-        else:
-            prev_result = result
+        if should_close_segment(result, prev_result, cycles):
+            window, prev_result, cycles = [], "", 0
             await segment_closed(result)
+        elif prev_result == result:
+            cycles += 1
+        else:
+            cycles = 0
+            prev_result = result
+
+
+def should_close_segment(result, prev_result, cycles, max_cycles=1):
+    """return if segment should be closed"""
+    return result == prev_result and cycles == max_cycles
