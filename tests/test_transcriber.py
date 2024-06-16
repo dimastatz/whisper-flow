@@ -37,3 +37,7 @@ def test_transcribe_chunk():
         )
 
     assert response.status_code == 200
+
+    expected = resource["expected"]["final_ground_truth"]
+    error = wer(response.json()["text"].lower(), expected.lower())
+    assert error < 0.1
