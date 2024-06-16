@@ -1,17 +1,29 @@
 """ fast api declaration """
 
 import logging
-from fastapi import FastAPI, WebSocket
+from typing import List
+from fastapi import FastAPI, WebSocket, Form, File, UploadFile
 
+import whisperflow.transcriber as ts
+
+
+VERSION = "0.0.1"
 
 app = FastAPI()
-VERSION = "0.1.0"
 
 
 @app.get("/health", response_model=str)
 def health():
     """health function on API"""
     return f"Whisper Flow V{VERSION}"
+
+
+@app.post("/transcribe_pcm", response_model=dict)
+def transcribe(model_name: str = Form(...), files: List[UploadFile] = File(...)):
+    """transcribe chunk"""
+    model = ts.get_model(model_name)
+    content = files[0].file.read()
+    return ts.transcribe_pcm_chunks(model, content)
 
 
 @app.websocket("/ws")

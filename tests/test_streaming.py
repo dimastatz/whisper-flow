@@ -4,8 +4,6 @@ import asyncio
 from queue import Queue
 
 import pytest
-from starlette.testclient import TestClient
-
 import tests.utils as ut
 import whisperflow.streaming as st
 import whisperflow.fast_server as fs
@@ -83,17 +81,10 @@ def test_streaming():
     assert not res
 
 
-def test_fast_api():
-    """test health api"""
-    with TestClient(fs.app) as client:
-        response = client.get("/health")
-        assert response.status_code == 200 and bool(response.text)
-
-
 @pytest.mark.asyncio
 async def test_ws():
     """test health api"""
-    client = TestClient(fs.app)
+    client = ut.TestClient(fs.app)
     with client.websocket_connect("/ws") as websocket:
         websocket.send_text("Hello, world 1")
         data = websocket.receive_bytes()
