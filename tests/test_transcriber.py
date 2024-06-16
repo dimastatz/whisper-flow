@@ -27,3 +27,13 @@ def test_transcribe_chunk():
     client = ut.TestClient(fr.app)
     response = client.get("/health")
     assert response.status_code == 200
+
+    path = ut.get_resource_path("3081-166546-0000", "wav")
+    with open(path, "br") as file:
+        response = client.post(
+            url="/transcribe_pcm_chunk",
+            data={"model_name": "tiny.en.pt"},
+            files=[("files", file)],
+        )
+
+    assert response.status_code == 200
