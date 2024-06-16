@@ -24,7 +24,7 @@ def transcribe_pcm_chunk(
     """transcribe chunk"""
     model = ts.get_model(model_name)
     content = files[0].file.read()
-    return ts.transcribe_pcm_chunks(model, content)
+    return ts.transcribe_pcm_chunks(model, [content])
 
 
 @app.websocket("/ws")
