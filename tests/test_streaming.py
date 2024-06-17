@@ -82,16 +82,18 @@ def test_streaming():
 
 
 @pytest.mark.asyncio
-async def test_ws():
+async def test_ws(chunk_size=4096):
     """test health api"""
     client = ut.TestClient(fs.app)
     with client.websocket_connect("/ws") as websocket:
-        websocket.send_text("Hello, world 1")
-        data = websocket.receive_bytes()
-        assert data == b"Hello, world 1"
+        res = ut.load_resource("3081-166546-0000")
+        chunks = [
+            res["audio"][i : i + chunk_size]
+            for i in range(0, len(res["audio"]), chunk_size)
+        ]
 
-        websocket.send_text("Hello, world 2")
-        data = websocket.receive_bytes()
-        assert data == b"Hello, world 2"
+        websocket.send_bytes(chunks[0])
+        res = websocket.recieve_json()
+        assert res
 
         websocket.close()
