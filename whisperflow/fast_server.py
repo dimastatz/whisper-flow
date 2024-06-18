@@ -33,17 +33,9 @@ def transcribe_pcm_chunk(
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     """webscoket implementation"""
-    model = ts.get_model()
 
-    async def transcribe_chunks(chunks: list) -> dict:
-        await asyncio.sleep(0.01)
-        return ts.transcribe_pcm_chunks(model, chunks)
-
-    def segment_closed(websocket: WebSocket):
-        async def send_back(data: dict):
-            await websocket.send_json(data)
-
-        return send_back
+    async def send_back(data: dict):
+        await websocket.send_json(data)
 
     task = None
 
@@ -51,11 +43,8 @@ async def websocket_endpoint(websocket: WebSocket):
         await websocket.accept()
         queue, should_stop = Queue(), [False]
 
-        segment_closed_callback = segment_closed(websocket)
         task = asyncio.create_task(
-            st.transcribe(
-                should_stop, queue, transcribe_chunks, segment_closed_callback
-            )
+            st.transcribe(should_stop, queue, ts.transcribe_pcm_chunks_async, send_back)
         )
 
         while True:

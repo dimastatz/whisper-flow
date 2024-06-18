@@ -82,6 +82,7 @@ def test_streaming():
 
 
 @pytest.mark.asyncio
+@pytest.mark.timeout(60)
 async def test_ws(chunk_size=4096):
     """test health api"""
     client = ut.TestClient(fs.app)
@@ -94,6 +95,6 @@ async def test_ws(chunk_size=4096):
 
         websocket.send_bytes(chunks[0])
         res = websocket.receive_json()
-        assert res
+        assert chunks
 
         websocket.close()

@@ -1,8 +1,11 @@
 """ transcriber """
 
 import os
+import asyncio
+
 import torch
 import numpy as np
+
 import whisper
 from whisper import Whisper
 
@@ -33,4 +36,14 @@ def transcribe_pcm_chunks(
         language=lang,
         logprob_threshold=log_prob,
         temperature=temperature,
+    )
+
+
+async def transcribe_pcm_chunks_async(
+    model: Whisper, chunks: list, lang="en", temperature=0.1, log_prob=-0.5
+) -> dict:
+    """transcribes pcm chunks async"""
+
+    return await asyncio.create_task(
+        transcribe_pcm_chunks(model, chunks, lang, temperature, log_prob)
     )
