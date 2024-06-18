@@ -93,7 +93,7 @@ async def test_ws(chunk_size=4096):
         ]
 
         websocket.send_bytes(chunks[0])
-        res = websocket.recieve_json()
+        res = websocket.receive_json()
         assert res
 
         websocket.close()

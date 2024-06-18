@@ -36,8 +36,8 @@ async def websocket_endpoint(websocket: WebSocket):
     model = ts.get_model()
 
     async def transcribe_chunks(chunks: list) -> dict:
-        task = asyncio.create_task(ts.transcribe_pcm_chunks(model, chunks))
-        return await task
+        await asyncio.sleep(0.01)
+        return ts.transcribe_pcm_chunks(model, chunks)
 
     def segment_closed(websocket: WebSocket):
         async def send_back(data: dict):
