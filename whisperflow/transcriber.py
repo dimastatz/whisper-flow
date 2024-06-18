@@ -43,7 +43,6 @@ async def transcribe_pcm_chunks_async(
     model: Whisper, chunks: list, lang="en", temperature=0.1, log_prob=-0.5
 ) -> dict:
     """transcribes pcm chunks async"""
-    loop = asyncio.get_running_loop()
-    return await loop.run_in_executor(
+    return await asyncio.get_running_loop().run_in_executor(
         None, transcribe_pcm_chunks, model, chunks, lang, temperature, log_prob
     )
