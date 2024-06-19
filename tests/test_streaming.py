@@ -98,3 +98,5 @@ async def test_ws(chunk_size=4096):
         assert chunks
 
         websocket.close()
+
+    assert client

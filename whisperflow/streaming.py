@@ -1,5 +1,6 @@
 """ test scenario module """
 
+import uuid
 import asyncio
 from queue import Queue
 from typing import Callable
@@ -44,3 +45,21 @@ async def transcribe(
 def should_close_segment(result, prev_result, cycles, max_cycles=1):
     """return if segment should be closed"""
     return result == prev_result and cycles == max_cycles
+
+
+class TrancribeSession:  # pylint: disable=too-few-public-methods
+    """transcription state"""
+
+    def __init__(self, transcribe_async, send_back_async) -> None:
+        """ctor"""
+        self.id = uuid.uuid4() # pylint: disable=invalid-name
+        self.queue = Queue()
+        self.should_stop = [False]
+        self.task = asyncio.create_task(
+            transcribe(self.should_stop, self.queue, transcribe_async, send_back_async)
+        )
+
+    async def stop(self):
+        """stop session"""
+        self.should_stop[0] = True
+        await self.task

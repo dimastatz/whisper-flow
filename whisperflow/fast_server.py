@@ -1,9 +1,6 @@
 """ fast api declaration """
 
 import logging
-import asyncio
-
-from queue import Queue
 from typing import List
 from fastapi import FastAPI, WebSocket, Form, File, UploadFile
 
@@ -12,6 +9,9 @@ import whisperflow.transcriber as ts
 
 VERSION = "0.0.1"
 app = FastAPI()
+
+
+sessions = {}
 
 
 @app.get("/health", response_model=str)
@@ -33,33 +33,23 @@ def transcribe_pcm_chunk(
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     """webscoket implementation"""
-
     model = ts.get_model()
 
-    async def transcribe(chunks: list):
-        return await asyncio.get_running_loop().run_in_executor(
-            ts.transcribe_pcm_chunks, model, chunks
-        )
+    async def transcribe_async(chunks: list):
+        return await ts.transcribe_pcm_chunks_async(model, chunks)
 
-    async def send_back(data: dict):
+    async def send_back_async(data: dict):
         await websocket.send_json(data)
-
-    task = None
 
     try:
         await websocket.accept()
-        queue, should_stop = Queue(), [False]
-
-        task = asyncio.create_task(
-            st.transcribe(should_stop, queue, transcribe, send_back)
-        )
+        session = st.TrancribeSession(transcribe_async, send_back_async)
+        sessions[session.id] = session
 
         while True:
             data = await websocket.receive_bytes()
-            queue.put(data)
+            session.queue.put(data)
     except Exception as exception:  # pylint: disable=broad-except
         logging.error(exception)
-        should_stop = [True]
-        if task:
-            await task
+        await session.stop()
         await websocket.close()
