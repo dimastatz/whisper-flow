@@ -45,6 +45,7 @@ def test_transcribe_chunk():
 
 @pytest.mark.asyncio
 async def test_transcribe_chunk_async():
+    """test transcribe async"""
     model = tr.get_model()
     assert model is not None
     resource = ut.load_resource("3081-166546-0000")
