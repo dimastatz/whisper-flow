@@ -18,7 +18,7 @@ async def transcribe(
     should_stop: list,
     queue: Queue,
     transcriber: Callable[[list], str],
-    segment_closed: Callable[[str], None],
+    segment_closed: Callable[[dict], None],
 ):
     """the transcription loop"""
     window, prev_result, cycles = [], "", 0
@@ -30,16 +30,18 @@ async def transcribe(
         if not window:
             continue
 
-        result = await transcriber(window)
+        result = {"data": await transcriber(window), "is_partial": False}
 
         if should_close_segment(result, prev_result, cycles):
             window, prev_result, cycles = [], "", 0
-            await segment_closed(result)
+            result["is_partial"] = True
         elif prev_result == result:
             cycles += 1
         else:
             cycles = 0
             prev_result = result
+
+        await segment_closed(result)
 
 
 def should_close_segment(result, prev_result, cycles, max_cycles=1):
