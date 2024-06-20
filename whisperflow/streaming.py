@@ -52,7 +52,7 @@ class TrancribeSession:  # pylint: disable=too-few-public-methods
 
     def __init__(self, transcribe_async, send_back_async) -> None:
         """ctor"""
-        self.id = uuid.uuid4() # pylint: disable=invalid-name
+        self.id = uuid.uuid4()  # pylint: disable=invalid-name
         self.queue = Queue()
         self.should_stop = [False]
         self.task = asyncio.create_task(
