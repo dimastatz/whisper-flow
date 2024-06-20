@@ -30,11 +30,11 @@ async def transcribe(
         if not window:
             continue
 
-        result = {"data": await transcriber(window), "is_partial": False}
+        result = {"data": await transcriber(window), "is_partial": True}
 
         if should_close_segment(result, prev_result, cycles):
             window, prev_result, cycles = [], "", 0
-            result["is_partial"] = True
+            result["is_partial"] = False
         elif prev_result == result:
             cycles += 1
         else:
