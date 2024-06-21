@@ -93,12 +93,15 @@ async def test_ws(chunk_size=4096):
             for i in range(0, len(res["audio"]), chunk_size)
         ]
 
+        results = []
         for chunk in chunks:
             websocket.send_bytes(chunk)
+            websocket.settimeout(1)
+            res = websocket.receive_json()
+            if res:
+                results.append(res)
 
-        res = websocket.receive_json()
-        assert res
-
+        assert res       
         websocket.close()
 
     assert client
