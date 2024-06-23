@@ -61,6 +61,10 @@ class TrancribeSession:  # pylint: disable=too-few-public-methods
             transcribe(self.should_stop, self.queue, transcribe_async, send_back_async)
         )
 
+    def add_chunk(self, chunk: bytes):
+        """add new chunk"""
+        self.queue.put_nowait(chunk)
+
     async def stop(self):
         """stop session"""
         self.should_stop[0] = True

@@ -48,7 +48,7 @@ async def websocket_endpoint(websocket: WebSocket):
 
         while True:
             data = await websocket.receive_bytes()
-            session.queue.put(data)
+            session.add_chunk(data)
     except Exception as exception:  # pylint: disable=broad-except
         logging.error(exception)
         await session.stop()
