@@ -96,8 +96,9 @@ async def test_ws(chunk_size=4096):
         for chunk in chunks:
             websocket.send_bytes(chunk)
 
-        res = websocket.receive_json()
-        assert res
+        await asyncio.sleep(3)
+        result = websocket.receive_json()
+        assert result
         websocket.close()
 
     assert client
