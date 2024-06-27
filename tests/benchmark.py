@@ -18,8 +18,7 @@ def send_chunks(url="ws://localhost:8181/ws", chunk_size=4096):
     assert chunk_size
 
     websocket = ws.create_connection(url)
-    websocket.settimeout(0.01)
-
+    websocket.settimeout(0.1)
     websocket.close()
 
 
