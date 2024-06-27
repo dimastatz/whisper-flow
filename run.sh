@@ -21,8 +21,8 @@ elif [ $1 = "-local" ]; then
     pip install --upgrade pip
     pip install -r ./requirements.txt
 
-    black whisperflow tests tests-perf
-    pylint --fail-under=9.9 whisperflow tests tests-perf
+    black whisperflow tests
+    pylint --fail-under=9.9 whisperflow tests
     pytest --cov-fail-under=95 --cov whisperflow -v tests
 elif [ $1 = "-test" ]; then
     trap 'abort' 0
@@ -30,8 +30,8 @@ elif [ $1 = "-test" ]; then
     
     echo "Running format, linter and tests"
     source .venv/bin/activate
-    black whisperflow tests tests-perf
-    pylint --fail-under=9.9 whisperflow tests tests-perf
+    black whisperflow tests
+    pylint --fail-under=9.9 whisperflow tests
     pytest --cov-fail-under=95 --cov --log-cli-level=INFO whisperflow -v tests
 elif [ $1 = "-docker" ]; then
     echo "Building and running docker image"
