@@ -12,7 +12,7 @@ def send_health(url="http://localhost:8181/health"):
 
 
 def send_chunks(url="ws://localhost:8181/ws", chunk_size=4096):
-    """ " send chunks"""
+    """ send chunks """
     folder = Path(__file__).resolve().parents[1]
     assert folder
     assert chunk_size
@@ -22,7 +22,7 @@ def send_chunks(url="ws://localhost:8181/ws", chunk_size=4096):
     websocket.close()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     print("Starting benchmark")
     send_health()
     send_chunks()
