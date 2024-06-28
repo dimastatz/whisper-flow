@@ -45,7 +45,7 @@ elif [ $1 = "-run" ]; then
     echo "Running WhisperFlow server"
     kill $(lsof -t -i:8181) 
     nohup uvicorn whisperflow.fast_server:app --host 0.0.0.0 --port 8181 &
-    sleep 3s
+    sleep 2s
     python ./tests/benchmark.py
     kill $(lsof -t -i:8181)
 else

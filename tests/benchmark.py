@@ -25,5 +25,6 @@ def send_chunks(url="ws://localhost:8181/ws", chunk_size=4096):
 if __name__ == "__main__":
     print("Starting benchmark")
     send_health()
+    print("Health validate")
     send_chunks()
     print("Ending benchmark")
