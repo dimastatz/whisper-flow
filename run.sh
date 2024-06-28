@@ -43,7 +43,11 @@ elif [ $1 = "-docker" ]; then
     docker run --name whisperflow-container -p 8888:8888 -d whisperflow-image
 elif [ $1 = "-run" ]; then
     echo "Running WhisperFlow server"
-    uvicorn whisperflow.fast_server:app --host 0.0.0.0 --port 8181
+    kill $(lsof -t -i:8181) 
+    nohup uvicorn whisperflow.fast_server:app --host 0.0.0.0 --port 8181 &
+    sleep 3s
+    python ./tests/benchmark.py
+    kill $(lsof -t -i:8181)
 else
   echo "Wrong argument is provided. Usage:
     1. '-local' to build local environment

@@ -12,7 +12,7 @@ def send_health(url="http://localhost:8181/health"):
 
 
 def send_chunks(url="ws://localhost:8181/ws", chunk_size=4096):
-    """ send chunks """
+    """send chunks"""
     folder = Path(__file__).resolve().parents[1]
     assert folder
     assert chunk_size
