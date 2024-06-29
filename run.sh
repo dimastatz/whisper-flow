@@ -46,7 +46,7 @@ elif [ $1 = "-run" ]; then
     kill $(lsof -t -i:8181) 
     nohup uvicorn whisperflow.fast_server:app --host 0.0.0.0 --port 8181 &
     sleep 2s
-    python ./tests/benchmark.py
+    pytest  -v tests/benchmark
     kill $(lsof -t -i:8181)
 else
   echo "Wrong argument is provided. Usage:
