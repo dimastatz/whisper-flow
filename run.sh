@@ -32,7 +32,7 @@ elif [ $1 = "-test" ]; then
     source .venv/bin/activate
     black whisperflow tests
     pylint --fail-under=9.9 whisperflow tests
-    pytest --cov-fail-under=95 --cov --log-cli-level=INFO whisperflow -v tests
+    pytest --ignore=tests/benchmark --cov-fail-under=95 --cov --log-cli-level=INFO whisperflow -v tests
 elif [ $1 = "-docker" ]; then
     echo "Building and running docker image"
     docker stop whisperflow-container

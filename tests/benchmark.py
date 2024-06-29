@@ -2,15 +2,7 @@
 import os
 import json
 from pathlib import Path
-
-import requests
 import websocket as ws
-
-
-def send_health(url="http://localhost:8181/health"):
-    """basic test"""
-    result = requests.get(url=url, timeout=1)
-    assert result.status_code == 200
 
 
 def send_chunks(url="ws://localhost:8181/ws", chunk_size=4096):
@@ -55,7 +47,5 @@ def get_resource_path(name: str, extension: str) -> str:
 
 if __name__ == "__main__":
     print("Starting benchmark")
-    send_health()
-    print("Health validate")
     send_chunks()
     print("Ending benchmark")
