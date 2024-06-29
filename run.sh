@@ -23,7 +23,7 @@ elif [ $1 = "-local" ]; then
 
     black whisperflow tests
     pylint --fail-under=9.9 whisperflow tests
-    pytest --cov-fail-under=95 --cov whisperflow -v tests
+    pytest --ignore=tests/benchmark --cov-fail-under=95 --cov whisperflow -v tests
 elif [ $1 = "-test" ]; then
     trap 'abort' 0
     set -e
