@@ -38,7 +38,8 @@ def test_send_chunks(url="ws://localhost:8181/ws", chunk_size=4096):
     results = []
     for chunk in chunks:
         websocket.send_bytes(chunk)
-        res = get_res(ws)
+        res = get_res(websocket)
+
         if res:
             results.append(res)
 
