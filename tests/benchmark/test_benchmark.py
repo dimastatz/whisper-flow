@@ -1,7 +1,7 @@
 """benchamrk"""
-import requests
 from pathlib import Path
 
+import requests
 import websocket as ws
 import tests.utils as ut
 
@@ -10,6 +10,14 @@ def test_health(url="http://localhost:8181/health"):
     """basic test"""
     result = requests.get(url=url, timeout=1)
     assert result.status_code == 200
+
+
+def get_res(websocket):
+    """try read with timout"""
+    try:
+        return websocket.recv()
+    except Exception:
+        return ""
 
 
 def test_send_chunks(url="ws://localhost:8181/ws", chunk_size=4096):
@@ -27,6 +35,13 @@ def test_send_chunks(url="ws://localhost:8181/ws", chunk_size=4096):
         for i in range(0, len(res["audio"]), chunk_size)
     ]
 
-    print(len(chunks))
+    results = []
+    for chunk in chunks:
+        websocket.send_bytes(chunk)
+        res = get_res(ws)
+        if res:
+            results.append(res)
 
+    assert chunks
+    assert results
     websocket.close()
