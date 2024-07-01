@@ -1,6 +1,7 @@
 """benchamrk"""
 from pathlib import Path
 
+import json
 import requests
 import websocket as ws
 import tests.utils as ut
@@ -41,7 +42,7 @@ def test_send_chunks(url="ws://localhost:8181/ws", chunk_size=4096):
         res = get_res(websocket)
 
         if res:
-            results.append(res)
+            results.append(json.loads(res))
 
     assert chunks
     assert results
