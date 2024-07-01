@@ -53,7 +53,8 @@ else
   echo "Wrong argument is provided. Usage:
     1. '-local' to build local environment
     2. '-docker' to build and run docker container
-    3. '-test' to run linter, formatter and tests"
+    3. '-test' to run linter, formatter and tests
+    4. '-benchmark' to run benchmark tests"
 fi
 
 trap : 0
