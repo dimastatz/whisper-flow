@@ -10,7 +10,8 @@ if [ "$#" -eq 0 ]; then
     echo "No arguments provided. Usage: 
     1. '-local' to build local environment
     2. '-docker' to build and run docker container
-    3. '-test' to run linter, formatter and tests"
+    3. '-test' to run linter, formatter and tests
+    4. '-benchmark' to run benchmark tests"
 elif [ $1 = "-local" ]; then
     trap 'abort' 0
     set -e
@@ -41,7 +42,7 @@ elif [ $1 = "-docker" ]; then
     # build docker and run
     docker build --tag whisperflow-image --build-arg CACHEBUST=$(date +%s) .
     docker run --name whisperflow-container -p 8888:8888 -d whisperflow-image
-elif [ $1 = "-run" ]; then
+elif [ $1 = "-benchmark" ]; then
     echo "Running WhisperFlow server"
     kill $(lsof -t -i:8181) 
     nohup uvicorn whisperflow.fast_server:app --host 0.0.0.0 --port 8181 &
