@@ -43,12 +43,17 @@ elif [ $1 = "-docker" ]; then
     docker build --tag whisperflow-image --build-arg CACHEBUST=$(date +%s) .
     docker run --name whisperflow-container -p 8888:8888 -d whisperflow-image
 elif [ $1 = "-benchmark" ]; then
-    echo "Running WhisperFlow server"
+    echo "Running WhisperFlow Server"
     kill $(lsof -t -i:8181) 
     nohup uvicorn whisperflow.fast_server:app --host 0.0.0.0 --port 8181 &
     sleep 2s
+    echo "Running WhisperFlow benchmark tests"
     pytest  -v tests/benchmark
     kill $(lsof -t -i:8181)
+elif [ $1 = "-run-server" ]; then
+    echo "Running WhisperFlow server"
+    kill $(lsof -t -i:8181) 
+    uvicorn whisperflow.fast_server:app --host 0.0.0.0 --port 8181
 else
   echo "Wrong argument is provided. Usage:
     1. '-local' to build local environment

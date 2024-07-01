@@ -16,8 +16,7 @@ def get_res(websocket):
     """try read with timout"""
     try:
         return websocket.recv()
-    except Exception as e:
-        print(e)
+    except ws.WebSocketTimeoutException:
         return ""
 
 
