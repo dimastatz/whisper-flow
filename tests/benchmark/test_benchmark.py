@@ -1,7 +1,6 @@
 """benchamrk"""
-from pathlib import Path
-
 import json
+import time
 import requests
 import websocket as ws
 import tests.utils as ut
@@ -23,12 +22,7 @@ def get_res(websocket):
 
 def test_send_chunks(url="ws://localhost:8181/ws", chunk_size=4096):
     """send chunks"""
-    folder = Path(__file__).resolve().parents[1]
-    assert folder
-    assert chunk_size
-
-    websocket = ws.create_connection(url)
-    websocket.settimeout(0.1)
+    websocket = ws.create_connection(url, 0.1)
 
     res = ut.load_resource("3081-166546-0000")
     chunks = [
@@ -44,6 +38,7 @@ def test_send_chunks(url="ws://localhost:8181/ws", chunk_size=4096):
         if res:
             results.append(json.loads(res))
 
-    assert chunks
+    time.sleep(3)
+
     assert results
     websocket.close()
