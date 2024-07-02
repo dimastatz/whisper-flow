@@ -39,7 +39,14 @@ def test_send_chunks(url="ws://localhost:8181/ws", chunk_size=4096):
         if res:
             results.append(json.loads(res))
 
-    time.sleep(3)
+    attempts = 3
+    while attempts > 0:
+        res = get_res(websocket)
+        if res:
+            results.append(json.loads(res))
+        else:
+            attempts -= 1
+            time.sleep(1)
 
     assert results
     websocket.close()
