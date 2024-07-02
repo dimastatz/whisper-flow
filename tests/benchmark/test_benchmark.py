@@ -22,7 +22,8 @@ def get_res(websocket):
 
 def test_send_chunks(url="ws://localhost:8181/ws", chunk_size=4096):
     """send chunks"""
-    websocket = ws.create_connection(url, 0.1)
+    websocket = ws.create_connection(url)
+    websocket.settimeout(0.1)
 
     res = ut.load_resource("3081-166546-0000")
     chunks = [
