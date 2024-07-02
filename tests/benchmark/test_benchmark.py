@@ -39,14 +39,16 @@ def test_send_chunks(url="ws://localhost:8181/ws", chunk_size=4096):
         if res:
             results.append(json.loads(res))
 
-    attempts = 3
-    while attempts > 0:
+    attempts = 0
+    while attempts < 3:
         res = get_res(websocket)
         if res:
+            attempts = 0
             results.append(json.loads(res))
         else:
-            attempts -= 1
+            attempts += 1
             time.sleep(1)
 
-    assert results
+    item = [x for x in results if not x["is_partial"]][-1:]
+    assert item
     websocket.close()
