@@ -52,9 +52,9 @@ def test_send_chunks(url="ws://localhost:8181/ws", chunk_size=4096):
 
     item = [x for x in results if not x["is_partial"]][-1:][0]
 
-    actual = item["data"]["text"].lower().trim()
-    expected = resource["expected"]["final_ground_truth"].lower().trim()
-    
+    actual = item["data"]["text"].lower().strip()
+    expected = resource["expected"]["final_ground_truth"].lower().strip()
+
     error = jw.wer(actual, expected)
     assert error < 0.1
     websocket.close()
