@@ -2,6 +2,7 @@
 import json
 import time
 import requests
+import jiwer as jw
 import websocket as ws
 import tests.utils as ut
 
@@ -25,10 +26,10 @@ def test_send_chunks(url="ws://localhost:8181/ws", chunk_size=4096):
     websocket = ws.create_connection(url)
     websocket.settimeout(0.1)
 
-    res = ut.load_resource("3081-166546-0000")
+    resource = ut.load_resource("3081-166546-0000")
     chunks = [
-        res["audio"][i : i + chunk_size]
-        for i in range(0, len(res["audio"]), chunk_size)
+        resource["audio"][i : i + chunk_size]
+        for i in range(0, len(resource["audio"]), chunk_size)
     ]
 
     results = []
@@ -50,5 +51,10 @@ def test_send_chunks(url="ws://localhost:8181/ws", chunk_size=4096):
             time.sleep(1)
 
     item = [x for x in results if not x["is_partial"]][-1:][0]
-    assert item
+
+    actual = item["data"]["text"].lower().trim()
+    expected = resource["expected"]["final_ground_truth"].lower().trim()
+    
+    error = jw.wer(actual, expected)
+    assert error < 0.1
     websocket.close()
