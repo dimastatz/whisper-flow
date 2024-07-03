@@ -49,6 +49,6 @@ def test_send_chunks(url="ws://localhost:8181/ws", chunk_size=4096):
             attempts += 1
             time.sleep(1)
 
-    item = [x for x in results if not x["is_partial"]][-1:]
+    item = [x for x in results if not x["is_partial"]][-1:][0]
     assert item
     websocket.close()
