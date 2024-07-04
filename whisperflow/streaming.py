@@ -1,5 +1,6 @@
 """ test scenario module """
 
+import time
 import uuid
 import asyncio
 from queue import Queue
@@ -24,6 +25,7 @@ async def transcribe(
     window, prev_result, cycles = [], "", 0
 
     while not should_stop[0]:
+        start = time.time()
         await asyncio.sleep(0.01)
         window.extend(get_all(queue))
 
@@ -31,6 +33,7 @@ async def transcribe(
             continue
 
         result = {"data": await transcriber(window), "is_partial": True}
+        result["time"] = (time.time() - start) * 1000
 
         if should_close_segment(result, prev_result, cycles):
             window, prev_result, cycles = [], "", 0
