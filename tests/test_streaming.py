@@ -46,7 +46,7 @@ async def test_transcribe_streaming(chunk_size=4096):
     async def dummy_transcriber(items: list) -> str:
         await asyncio.sleep(0.01)
         result = ts.transcribe_pcm_chunks(model, items)
-        return result["text"].lower()
+        return result
 
     result = []
 
