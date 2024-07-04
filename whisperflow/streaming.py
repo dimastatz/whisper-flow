@@ -22,7 +22,7 @@ async def transcribe(
     segment_closed: Callable[[dict], None],
 ):
     """the transcription loop"""
-    window, prev_result, cycles = [], "", 0
+    window, prev_result, cycles = [], {}, 0
 
     while not should_stop[0]:
         start = time.time()
@@ -32,13 +32,16 @@ async def transcribe(
         if not window:
             continue
 
-        result = {"data": await transcriber(window), "is_partial": True}
-        result["time"] = (time.time() - start) * 1000
+        result = {
+            "is_partial": True,
+            "data": await transcriber(window),
+            "time": (time.time() - start) * 1000,
+        }
 
         if should_close_segment(result, prev_result, cycles):
             window, prev_result, cycles = [], "", 0
             result["is_partial"] = False
-        elif prev_result == result:
+        elif result["data"] == prev_result.get("data", None):
             cycles += 1
         else:
             cycles = 0
@@ -47,9 +50,9 @@ async def transcribe(
         await segment_closed(result)
 
 
-def should_close_segment(result, prev_result, cycles, max_cycles=1):
+def should_close_segment(result: dict, prev_result: dict, cycles, max_cycles=1):
     """return if segment should be closed"""
-    return result == prev_result and cycles == max_cycles
+    return result["data"] == prev_result.get("data", None) and cycles == max_cycles
 
 
 class TrancribeSession:  # pylint: disable=too-few-public-methods
