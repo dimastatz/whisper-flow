@@ -1,4 +1,5 @@
 """ test transcriber """
+
 import pytest
 from jiwer import wer
 import tests.utils as ut
