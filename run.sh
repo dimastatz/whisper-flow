@@ -54,12 +54,17 @@ elif [ $1 = "-run-server" ]; then
     echo "Running WhisperFlow server"
     kill $(lsof -t -i:8181) 
     uvicorn whisperflow.fast_server:app --host 0.0.0.0 --port 8181
+elif [ $1 = "-setup" ]; then
+    echo "Running WhisperFlow package setup"
+    pip install -e .
 else
   echo "Wrong argument is provided. Usage:
     1. '-local' to build local environment
     2. '-docker' to build and run docker container
     3. '-test' to run linter, formatter and tests
-    4. '-benchmark' to run benchmark tests"
+    4. '-benchmark' to run benchmark tests
+    5. '-run-server' to run fastapi server
+    6. '-setup' to run package setup"
 fi
 
 trap : 0
