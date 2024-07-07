@@ -11,7 +11,9 @@ if [ "$#" -eq 0 ]; then
     1. '-local' to build local environment
     2. '-docker' to build and run docker container
     3. '-test' to run linter, formatter and tests
-    4. '-benchmark' to run benchmark tests"
+    4. '-benchmark' to run benchmark tests
+    5. '-run-server' to run fastapi server
+    6. '-setup' to run package setup"
 elif [ $1 = "-local" ]; then
     trap 'abort' 0
     set -e
