@@ -4,20 +4,19 @@ import logging
 from typing import List
 from fastapi import FastAPI, WebSocket, Form, File, UploadFile
 
+from whisperflow import __version__
 import whisperflow.streaming as st
 import whisperflow.transcriber as ts
 
-VERSION = "0.0.1"
+
 app = FastAPI()
-
-
 sessions = {}
 
 
 @app.get("/health", response_model=str)
 def health():
     """health function on API"""
-    return f"Whisper Flow V{VERSION}"
+    return f"Whisper Flow V{__version__}"
 
 
 @app.post("/transcribe_pcm_chunk", response_model=dict)
