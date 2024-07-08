@@ -9,6 +9,7 @@ setup(
     author='Dima Statz',
     author_email='dima.statz@gmail.com',
     py_modules=['whisperflow'],
+    python_requires=">=3.8",
     install_requires=[
         "jiwer==3.0.4",
         "pytest==7.3.2",
