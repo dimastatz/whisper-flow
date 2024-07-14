@@ -51,4 +51,29 @@ The evaluation metrics used for comparing the performance of Whisper Flow are Wo
 
 ## How To Use it
 
+```Python 
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    """webscoket implementation"""
+    model = ts.get_model()
+
+    async def transcribe_async(chunks: list):
+        return await ts.transcribe_pcm_chunks_async(model, chunks)
+
+    async def send_back_async(data: dict):
+        await websocket.send_json(data)
+
+    try:
+        await websocket.accept()
+        session = st.TrancribeSession(transcribe_async, send_back_async)
+        sessions[session.id] = session
+
+        while True:
+            data = await websocket.receive_bytes()
+            session.add_chunk(data)
+    except Exception as exception:  # pylint: disable=broad-except
+        logging.error(exception)
+        await session.stop()
+        await websocket.close()
+
 
