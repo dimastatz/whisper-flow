@@ -55,6 +55,9 @@ The evaluation metrics used for comparing the performance of Whisper Flow are Wo
 To run WhisperFlow as a web server, start by cloning the repository to your local machine.
 ```bash
 git clone https://github.com/dimastatz/whisper-flow.git
+```
+Then navigate to WhisperFlow folder, create a local venv with all dependencies and run the web server on port 8181.
+```bash
 cd whisper-flow
 ./run.sh -local
 source .venv/bin/activate
