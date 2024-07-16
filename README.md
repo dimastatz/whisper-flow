@@ -52,17 +52,17 @@ The evaluation metrics used for comparing the performance of Whisper Flow are Wo
 ### How To Use it
 
 #### As a Web Server
-Clone a repo to your local machine
+To run WhisperFlow as a web server, start by cloning the repository to your local machine.
 ```bash
-
 git clone https://github.com/dimastatz/whisper-flow.git
+cd whisper-flow
+./run.sh -local
+source .venv/bin/activate
+./run.sh -run-server
 ```
 
 
-
-
 #### As a Python Package
-
 Set up a WebSocket endpoint for real-time transcription by retrieving the transcription model and creating asynchronous functions for transcribing audio chunks and sending JSON responses. Manage the WebSocket connection by continuously processing incoming audio data. Handle terminate exception to stop the session and close the connection if needed.
 
 ```Python 
