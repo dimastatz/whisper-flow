@@ -52,6 +52,11 @@ The evaluation metrics used for comparing the performance of Whisper Flow are Wo
 ### How To Use it
 
 #### As a Web Server
+Clone a repo to your local machine
+```bash
+
+git clone https://github.com/dimastatz/whisper-flow.git
+```
 
 
 
