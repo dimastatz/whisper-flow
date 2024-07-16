@@ -9,7 +9,7 @@ import pyaudio
 import websockets
 
 
-async def start_transcription(url="http://0.0.0.0:8181"):
+async def start_transcription(url="ws://0.0.0.0:8181/ws"):
     """stream mic audio to server"""
     async with websockets.connect(url) as websocket:
         await asyncio.gather(capture_audio(websocket), receive_transcription(websocket))
