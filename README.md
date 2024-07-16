@@ -50,6 +50,14 @@ Whisper Flow splits the audio stream into segments based on natural speech patte
 The evaluation metrics used for comparing the performance of Whisper Flow are Word Error Rate (WER) and latency. Latency is measured as the time between two subsequent partial results, with the goal of achieving sub-second latency. We are not starting from scratch; several quality benchmarks have already been performed for different ASR engines. I will rely on the research article ["Benchmarking Open Source and Paid Services for Speech to Text"](https://www.frontiersin.org/articles/10.3389/fdata.2023.1210559/full) for guidance.
 
 ### How To Use it
+
+#### As a Web Server
+
+
+
+
+#### As a Python Package
+
 Set up a WebSocket endpoint for real-time transcription by retrieving the transcription model and creating asynchronous functions for transcribing audio chunks and sending JSON responses. Manage the WebSocket connection by continuously processing incoming audio data. Handle terminate exception to stop the session and close the connection if needed.
 
 ```Python 
