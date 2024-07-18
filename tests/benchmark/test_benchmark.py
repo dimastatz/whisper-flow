@@ -22,7 +22,11 @@ def get_res(websocket):
         return ""
 
 
-def test_send_chunks(url="ws://localhost:8181/ws", chunk_size=4096):
+def dummy_sleep():
+    time.sleep(0.01)
+
+
+def test_send_chunks(benchmark, url="ws://localhost:8181/ws", chunk_size=4096):
     """send chunks"""
     websocket = ws.create_connection(url)
     websocket.settimeout(0.1)
@@ -32,6 +36,8 @@ def test_send_chunks(url="ws://localhost:8181/ws", chunk_size=4096):
         resource["audio"][i : i + chunk_size]
         for i in range(0, len(resource["audio"]), chunk_size)
     ]
+
+    benchmark(dummy_sleep)
 
     results = []
     for chunk in chunks:
