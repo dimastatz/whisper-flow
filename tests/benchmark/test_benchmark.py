@@ -13,17 +13,13 @@ def test_health(url="http://localhost:8181/health"):
     result = requests.get(url=url, timeout=1)
     assert result.status_code == 200
 
-
+@benchmark
 def get_res(websocket):
     """try read with timout"""
     try:
         return websocket.recv()
     except ws.WebSocketTimeoutException:
         return ""
-
-
-def dummy_sleep():
-    time.sleep(0.01)
 
 
 def test_send_chunks(benchmark, url="ws://localhost:8181/ws", chunk_size=4096):
@@ -37,13 +33,10 @@ def test_send_chunks(benchmark, url="ws://localhost:8181/ws", chunk_size=4096):
         for i in range(0, len(resource["audio"]), chunk_size)
     ]
 
-    benchmark(dummy_sleep)
-
     results = []
     for chunk in chunks:
         websocket.send_bytes(chunk)
-        res = get_res(websocket)
-
+        res = benchmark(get_res, websocket)
         if res:
             results.append(json.loads(res))
 
