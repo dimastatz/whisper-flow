@@ -25,7 +25,7 @@ def get_res(websocket):
         return ""
 
 
-def test_send_chunks(benchmark, url="ws://localhost:8181/ws", chunk_size=4096):
+def test_send_chunks(url="ws://localhost:8181/ws", chunk_size=4096):
     """send chunks"""
     websocket = ws.create_connection(url)
     websocket.settimeout(0.1)
@@ -39,7 +39,7 @@ def test_send_chunks(benchmark, url="ws://localhost:8181/ws", chunk_size=4096):
     results = []
     for chunk in chunks:
         websocket.send_bytes(chunk)
-        res = benchmark(get_res, websocket)
+        res = get_res(websocket)
         if res:
             results.append(res)
 
