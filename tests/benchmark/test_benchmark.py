@@ -18,11 +18,14 @@ def get_res(websocket):
     """try read with timout"""
     try:
         result = json.loads(websocket.recv())
-        print(result)
+        print_result(result)
         return result
     except ws.WebSocketTimeoutException:
-        print("Trasncription Timeout")
-        return ""
+        return {}
+
+
+def print_result(result: dict):
+    print(result["data"]["text"], result["time"])
 
 
 def test_send_chunks(url="ws://localhost:8181/ws", chunk_size=4096):
@@ -61,6 +64,7 @@ def test_send_chunks(url="ws://localhost:8181/ws", chunk_size=4096):
     error = jw.wer(actual, expected)
     assert error < 0.1
     websocket.close()
+
 
 
 if __name__ == '__main__':
