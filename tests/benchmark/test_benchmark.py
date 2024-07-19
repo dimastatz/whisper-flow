@@ -13,12 +13,15 @@ def test_health(url="http://localhost:8181/health"):
     result = requests.get(url=url, timeout=1)
     assert result.status_code == 200
 
-@benchmark
+
 def get_res(websocket):
     """try read with timout"""
     try:
-        return websocket.recv()
+        result = json.loads(websocket.recv())
+        print(result)
+        return result
     except ws.WebSocketTimeoutException:
+        print("Trasncription Timeout")
         return ""
 
 
@@ -38,14 +41,14 @@ def test_send_chunks(benchmark, url="ws://localhost:8181/ws", chunk_size=4096):
         websocket.send_bytes(chunk)
         res = benchmark(get_res, websocket)
         if res:
-            results.append(json.loads(res))
+            results.append(res)
 
     attempts = 0
     while attempts < 3:
         res = get_res(websocket)
         if res:
             attempts = 0
-            results.append(json.loads(res))
+            results.append(res)
         else:
             attempts += 1
             time.sleep(1)
@@ -58,3 +61,10 @@ def test_send_chunks(benchmark, url="ws://localhost:8181/ws", chunk_size=4096):
     error = jw.wer(actual, expected)
     assert error < 0.1
     websocket.close()
+
+
+if __name__ == '__main__':
+    print("Starting Whisper-Flow Benchmark")
+    test_send_chunks()
+    print("Whisper-Flow Benchmark Completed")
+
