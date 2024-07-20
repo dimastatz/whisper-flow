@@ -61,7 +61,7 @@ Then navigate to WhisperFlow folder, create a local venv with all dependencies a
 cd whisper-flow
 ./run.sh -local
 source .venv/bin/activate
-./run.sh -run-server
+./run.sh -benchmark
 ```
 
 
