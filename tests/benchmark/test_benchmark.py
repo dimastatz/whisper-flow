@@ -25,7 +25,9 @@ def get_res(websocket):
 
 
 def print_result(result: dict):
-    print(result["is_partial"], result["data"]["text"], result["time"])
+    """print result and execution time"""
+    formatted_time = "{:.2f}".format(result["time"])
+    print(result["is_partial"], result["data"]["text"], formatted_time)
 
 
 def test_send_chunks(url="ws://localhost:8181/ws", chunk_size=4096):
@@ -66,9 +68,7 @@ def test_send_chunks(url="ws://localhost:8181/ws", chunk_size=4096):
     websocket.close()
 
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     print("Starting Whisper-Flow Benchmark")
     test_send_chunks()
     print("Whisper-Flow Benchmark Completed")
-
