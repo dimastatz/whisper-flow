@@ -25,7 +25,7 @@ def get_res(websocket):
 
 
 def print_result(result: dict):
-    print(result["data"]["text"], result["time"])
+    print(result["is_partial"], result["data"]["text"], result["time"])
 
 
 def test_send_chunks(url="ws://localhost:8181/ws", chunk_size=4096):
