@@ -50,7 +50,7 @@ elif [ $1 = "-benchmark" ]; then
     nohup uvicorn whisperflow.fast_server:app --host 0.0.0.0 --port 8181 &
     sleep 2s
     echo "Running WhisperFlow benchmark tests"
-    pytest  -v -s tests/benchmark
+    pytest -v -s tests/benchmark
     kill $(lsof -t -i:8181)
 elif [ $1 = "-run-server" ]; then
     echo "Running WhisperFlow server"

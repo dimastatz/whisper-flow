@@ -64,7 +64,6 @@ source .venv/bin/activate
 ./run.sh -benchmark
 ```
 
-
 #### As a Python Package
 Set up a WebSocket endpoint for real-time transcription by retrieving the transcription model and creating asynchronous functions for transcribing audio chunks and sending JSON responses. Manage the WebSocket connection by continuously processing incoming audio data. Handle terminate exception to stop the session and close the connection if needed.
 
