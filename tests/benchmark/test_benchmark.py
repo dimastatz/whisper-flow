@@ -67,6 +67,11 @@ def test_send_chunks(url="ws://localhost:8181/ws", chunk_size=4096):
     assert error < 0.1
     websocket.close()
 
+    min_lt = min([x["time"] for x  in results])
+    max_lt = min([x["time"] for x  in results])
+    avg_lt = min([x["time"] for x  in results])
+    print(f"Benchmark Results WER={error}, Latency Min={min_lt} Max={max_lt} Avg={avg_lt}")
+
 
 if __name__ == "__main__":
     print("Starting Whisper-Flow Benchmark")
