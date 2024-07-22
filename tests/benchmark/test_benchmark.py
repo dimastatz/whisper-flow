@@ -5,6 +5,7 @@ import time
 import requests
 import jiwer as jw
 import websocket as ws
+import statistics as st
 import tests.utils as ut
 
 
@@ -63,14 +64,14 @@ def test_send_chunks(url="ws://localhost:8181/ws", chunk_size=4096):
     actual = item["data"]["text"].lower().strip()
     expected = resource["expected"]["final_ground_truth"].lower().strip()
 
-    error = jw.wer(actual, expected)
+    error = round(jw.wer(actual, expected), 2)
     assert error < 0.1
     websocket.close()
 
-    min_lt = min([x["time"] for x  in results])
-    max_lt = min([x["time"] for x  in results])
-    avg_lt = min([x["time"] for x  in results])
-    print(f"Benchmark Results WER={error}, Latency Min={min_lt} Max={max_lt} Avg={avg_lt}")
+    min_lt = round(min([float(x["time"]) for x  in results]), 2)
+    max_lt = round(max([float(x["time"]) for x  in results]), 2)
+    avg_lt = round(st.mean([float(x["time"]) for x  in results]), 2)
+    print(f"TOTAL: WER={error}; Latency MIN={min_lt} MAX={max_lt} MEAN={avg_lt}")
 
 
 if __name__ == "__main__":
