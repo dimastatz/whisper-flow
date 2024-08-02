@@ -2,7 +2,7 @@
 
 import json
 import time
-import statistics as st
+import pandas as pd
 
 import requests
 import jiwer as jw
@@ -29,7 +29,7 @@ def get_res(websocket):
 def print_result(result: dict):
     """print result and execution time"""
     formatted_time = "{:.2f}".format(result["time"])
-    print(result["is_partial"], result["data"]["text"], formatted_time)
+    print(result["is_partial"], formatted_time, result["data"]["text"])
 
 
 def test_send_chunks(url="ws://localhost:8181/ws", chunk_size=4096):
@@ -43,38 +43,29 @@ def test_send_chunks(url="ws://localhost:8181/ws", chunk_size=4096):
         for i in range(0, len(resource["audio"]), chunk_size)
     ]
 
-    results = []
+    df_result = pd.DataFrame(columns=["is_partial", "latency", "result"])
     for chunk in chunks:
         websocket.send_bytes(chunk)
         res = get_res(websocket)
         if res:
-            results.append(res)
+            df_result.loc[-1] = [res["is_partial"], res["time"], res["data"]["text"]]
 
     attempts = 0
     while attempts < 3:
         res = get_res(websocket)
         if res:
             attempts = 0
-            results.append(res)
+            df_result.loc[-1] = [res["is_partial"], res["time"], res["data"]["text"]]
         else:
             attempts += 1
             time.sleep(1)
 
-    item = [x for x in results if not x["is_partial"]][-1:][0]
-
-    actual = item["data"]["text"].lower().strip()
+    actual = df_result[-1]
     expected = resource["expected"]["final_ground_truth"].lower().strip()
 
     error = round(jw.wer(actual, expected), 2)
     assert error < 0.1
     websocket.close()
-
-    time_t = (round(float(x["time"]), 2) for x in results)
-    avg_lt = round(st.mean(time_t), 2)
-
-    print(
-        f"TOTAL: WER={error}; Latency MIN={min(time_t)} MAX={max(time_t)} MEAN={avg_lt}"
-    )
 
 
 if __name__ == "__main__":
