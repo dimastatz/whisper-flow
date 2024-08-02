@@ -60,7 +60,7 @@ def test_send_chunks(url="ws://localhost:8181/ws", chunk_size=4096):
             attempts += 1
             time.sleep(1)
 
-    actual = df_result[-1]
+    actual = df_result.loc[-1]["result"].lower().strip()
     expected = resource["expected"]["final_ground_truth"].lower().strip()
 
     error = round(jw.wer(actual, expected), 2)
