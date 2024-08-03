@@ -59,7 +59,8 @@ def test_send_chunks(url="ws://localhost:8181/ws", chunk_size=4096):
             attempts += 1
             time.sleep(1)
 
-    print(df_result)
+    pd.set_option('max_colwidth', 800)
+    print(df_result.to_string(justify='left', index=False))
     print("Latency Stats:\n", df_result["latency"].describe())
     
     actual = df_result.loc[len(df_result) - 1]["result"].lower().strip()
