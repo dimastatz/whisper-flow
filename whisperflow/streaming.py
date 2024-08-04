@@ -41,7 +41,7 @@ async def transcribe(
         if should_close_segment(result, prev_result, cycles):
             window, prev_result, cycles = [], {}, 0
             result["is_partial"] = False
-        elif result["data"] == prev_result.get("data", None):
+        elif result["data"]["text"] == prev_result.get("data", {}).get("text", ""):
             cycles += 1
         else:
             cycles = 0
