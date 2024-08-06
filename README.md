@@ -53,6 +53,11 @@ The evaluation metrics used for comparing the performance of Whisper Flow are Wo
 <div>Benchmark Results</div>
 </div><br/>
 
+<div align="center">
+<img src="/docs/imgs/results_stats.png"> 
+<div>Results Statistics</div>
+</div><br/>
+
 ### How To Use it
 
 #### As a Web Server
