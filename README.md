@@ -49,6 +49,9 @@ Whisper Flow splits the audio stream into segments based on natural speech patte
 ### Benchmarking
 The evaluation metrics used for comparing the performance of Whisper Flow are Word Error Rate (WER) and latency. Latency is measured as the time between two subsequent partial results, with the goal of achieving sub-second latency. We are not starting from scratch; several quality benchmarks have already been performed for different ASR engines. I will rely on the research article ["Benchmarking Open Source and Paid Services for Speech to Text"](https://www.frontiersin.org/articles/10.3389/fdata.2023.1210559/full) for guidance.
 ```bash
+| Partial | Latency | Result |
+| :------ | :-----: | -----: |
+
 True  175.47  when we took
 True  185.14  When we took her.
 True  237.83  when we took our seat.
