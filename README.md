@@ -48,11 +48,6 @@ Whisper Flow splits the audio stream into segments based on natural speech patte
 
 ### Benchmarking
 The evaluation metrics used for comparing the performance of Whisper Flow are Word Error Rate (WER) and latency. Latency is measured as the time between two subsequent partial results, with the goal of achieving sub-second latency. We are not starting from scratch; several quality benchmarks have already been performed for different ASR engines. I will rely on the research article ["Benchmarking Open Source and Paid Services for Speech to Text"](https://www.frontiersin.org/articles/10.3389/fdata.2023.1210559/full) for guidance.
-<div align="center">
-<img src="/docs/imgs/partial_results.png"> 
-<div>Benchmark Results</div>
-</div><br/>
-
 ```bash
 True 175.47  when we took
 True 185.14  When we took her.
@@ -64,7 +59,7 @@ True 210.04  when we took our seats at the breakfast.
 True 220.36  when we took our seats at the breakfast table.
 True 203.46  when we took our seats at the breakfast table.
 True 242.63  When we took our seats at the breakfast table, it will
-True 237.4  When we took our seats at the breakfast table, it was with
+True 237.41  When we took our seats at the breakfast table, it was with
 True 246.36  When we took our seats at the breakfast table, it was with the
 True 278.96  When we took our seats at the breakfast table, it was with the feeling.
 True 285.03  When we took our seats at the breakfast table, it was with the feeling of being.
@@ -72,15 +67,16 @@ True 295.39  When we took our seats at the breakfast table, it was with the feel
 True 270.88  When we took our seats at the breakfast table, it was with the feeling of being no longer
 True 320.43  When we took our seats at the breakfast table, it was with the feeling of being no longer looked
 True 303.66  When we took our seats at the breakfast table, it was with the feeling of being no longer looked upon.
-True 470.7  When we took our seats at the breakfast table, it was with the feeling of being no longer
+True 470.73  When we took our seats at the breakfast table, it was with the feeling of being no longer
 True 353.25  When we took our seats at the breakfast table, it was with the feeling of being no longer looked upon as connected.
 True 345.74  When we took our seats at the breakfast table, it was with the feeling of being no longer looked upon as connected in any way.
 True 368.66  When we took our seats at the breakfast table, it was with the feeling of being no longer looked upon as connected in any way with the
 True 400.25  When we took our seats at the breakfast table, it was with the feeling of being no longer looked upon as connected in any way with this case.
 True 382.71  When we took our seats at the breakfast table, it was with the feeling of being no longer looked upon as connected in any way with this case.
 False 405.02  When we took our seats at the breakfast table, it was with the feeling of being no longer looked upon as connected in any way with this case.
+
 Latency Stats:
- count     26.000000
+count     26.000000
 mean     275.223077
 std       84.525695
 min      154.700000
@@ -88,7 +84,6 @@ min      154.700000
 50%      258.620000
 75%      339.412500
 max      470.700000
-Name: latency, dtype: float64
 ```
 
 ### How To Use it
