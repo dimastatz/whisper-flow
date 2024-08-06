@@ -47,15 +47,14 @@ async def transcribe(
             cycles = 0
             prev_result = result
 
-        if prev_result.get("data", {}).get("text", ""):
+        if result["data"]["text"]:
             await segment_closed(result)
 
 
 def should_close_segment(result: dict, prev_result: dict, cycles, max_cycles=1):
     """return if segment should be closed"""
-    return cycles >= max_cycles and result["data"]["text"] == prev_result.get(
-        "data", {}
-    ).get("text", "")
+    return cycles == max_cycles and \
+        result["data"]["text"] == prev_result.get("data", {}).get("text", "")
 
 
 class TrancribeSession:  # pylint: disable=too-few-public-methods
