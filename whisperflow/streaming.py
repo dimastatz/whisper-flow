@@ -51,7 +51,7 @@ async def transcribe(
             await segment_closed(result)
 
 
-def should_close_segment(result: dict, prev_result: dict, cycles, max_cycles=1):
+def should_close_segment(result: dict, prev_result: dict, cycles, max_cycles=0):
     """return if segment should be closed"""
     return cycles >= max_cycles and result["data"]["text"] == prev_result.get(
         "data", {}
