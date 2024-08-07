@@ -47,7 +47,8 @@ Whisper Flow splits the audio stream into segments based on natural speech patte
 | we can change reality by changing our mind    |   5.55   | False     |
 
 ### Benchmarking
-The evaluation metrics used for comparing the performance of Whisper Flow are Word Error Rate (WER) and latency. Latency is measured as the time between two subsequent partial results, with the goal of achieving sub-second latency. We are not starting from scratch; several quality benchmarks have already been performed for different ASR engines. I will rely on the research article ["Benchmarking Open Source and Paid Services for Speech to Text"](https://www.frontiersin.org/articles/10.3389/fdata.2023.1210559/full) for guidance.
+The evaluation metrics for comparing the performance of Whisper Flow are Word Error Rate (WER) and latency. Latency is measured as the time between two subsequent partial results, with the goal of achieving sub-second latency. We're not starting from scratch, as several quality benchmarks have already been performed for different ASR engines. I will rely on the research article ["Benchmarking Open Source and Paid Services for Speech to Text"](https://www.frontiersin.org/articles/10.3389/fdata.2023.1210559/full) for guidance. For benchmarking the current implementation of Whisper Flow, I use [LibriSpeech](https://www.openslr.org/12).
+
 ```bash
 | Partial | Latency | Result |
 
@@ -76,7 +77,11 @@ True  368.66  When we took our seats at the breakfast table, it was with the fee
 True  400.25  When we took our seats at the breakfast table, it was with the feeling of being no longer looked upon as connected in any way with this case.
 True  382.71  When we took our seats at the breakfast table, it was with the feeling of being no longer looked upon as connected in any way with this case.
 False 405.02  When we took our seats at the breakfast table, it was with the feeling of being no longer looked upon as connected in any way with this case.
+```
 
+
+
+```bash
 Latency Stats:
 count     26.000000
 mean     275.223077
