@@ -79,7 +79,7 @@ True  382.71  When we took our seats at the breakfast table, it was with the fee
 False 405.02  When we took our seats at the breakfast table, it was with the feeling of being no longer looked upon as connected in any way with this case.
 ```
 
-When running this benchmark on a MacBook Air with an M1 chip and 16GB of RAM, we achieve impressive performance metrics. The latency is consistently well below 500ms, ensuring real-time responsiveness. Additionally, the word error rate is around 7%, demonstrating the accuracy of the transcription.
+When running this benchmark on a MacBook Air with an [M1 chip and 16GB of RAM](https://support.apple.com/en-il/111883#:~:text=Testing%20conducted%20by%20Apple%20in,to%208%20clicks%20from%20bottom.), we achieve impressive performance metrics. The latency is consistently well below 500ms, ensuring real-time responsiveness. Additionally, the word error rate is around 7%, demonstrating the accuracy of the transcription.
 
 ```bash
 Latency Stats:
