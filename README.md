@@ -137,4 +137,7 @@ async def websocket_endpoint(websocket: WebSocket):
         await session.stop()
         await websocket.close()
 ```
-
+#### Roadmap
+- [ ] Release v1.0 - Includes transcription streaming implementation.
+- [ ] Release v1.1 - Bug fixes and implementation of the most requested changes.
+- [ ] Release v1.2 - Prepare the package for integration with the py-speech package.
