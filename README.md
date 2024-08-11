@@ -111,10 +111,17 @@ source .venv/bin/activate
 #### As a Python Package
 Set up a WebSocket endpoint for real-time transcription by retrieving the transcription model and creating asynchronous functions for transcribing audio chunks and sending JSON responses. Manage the WebSocket connection by continuously processing incoming audio data. Handle terminate exception to stop the session and close the connection if needed.
 
+Start with installing whisper python package
+
+```bash
+pip install whisperflow
+```
+
+Now import whsiperflow and transcriber modules
+
 ```Python
 import whisperflow.streaming as st
 import whisperflow.transcriber as ts
-
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
