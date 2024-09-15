@@ -2,6 +2,7 @@ jiwer==3.0.4
 pytest==7.3.2
 black==23.3.0
 pandas==2.2.2
+wheel==0.44.0
 httpx==0.27.0
 pylint==2.17.4
 fastapi==0.108.0
