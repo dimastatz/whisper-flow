@@ -60,6 +60,7 @@ elif [ $1 = "-setup" ]; then
     echo "Running WhisperFlow package setup"
     # pip install -e .
     python setup.py sdist bdist_wheel
+    # pip install ./dist/whisperflow-0.0.1-py3-none-any.whl 
 else
   echo "Wrong argument is provided. Usage:
     1. '-local' to build local environment
