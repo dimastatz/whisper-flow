@@ -56,11 +56,14 @@ elif [ $1 = "-run-server" ]; then
     echo "Running WhisperFlow server"
     kill $(lsof -t -i:8181) 
     uvicorn whisperflow.fast_server:app --host 0.0.0.0 --port 8181
-elif [ $1 = "-setup" ]; then
+elif [ $1 = "-test-package" ]; then
     echo "Running WhisperFlow package setup"
-    # pip install -e .
     python setup.py sdist bdist_wheel
-    # pip install ./dist/whisperflow-0.0.1-py3-none-any.whl 
+    rm -rf .venv_test
+    python3 -m venv .venv_test
+    source .venv_test/bin/activate
+    pip install ./dist/whisperflow-0.0.1-py3-none-any.whl
+    pytest --ignore=tests/benchmark --cov-fail-under=95 --cov whisperflow -v tests
 else
   echo "Wrong argument is provided. Usage:
     1. '-local' to build local environment
