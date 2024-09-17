@@ -17,4 +17,6 @@ setup(
             Path(__file__).with_name("requirements.txt").open()
         )
     ],
+    long_description = "Whisper Flow Project",
+    long_description_content_type='text/markdown',
 )
