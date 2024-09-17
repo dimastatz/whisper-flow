@@ -64,6 +64,7 @@ elif [ $1 = "-test-package" ]; then
     source .venv_test/bin/activate
     pip install ./dist/whisperflow-0.0.1-py3-none-any.whl
     pytest --ignore=tests/benchmark --cov-fail-under=95 --cov whisperflow -v tests
+    # twine upload ./dist/*
 else
   echo "Wrong argument is provided. Usage:
     1. '-local' to build local environment
