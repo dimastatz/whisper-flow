@@ -21,6 +21,7 @@ setup(
             Path(__file__).with_name("requirements.txt").open()
         )
     ],
+    description='WhisperFlow: Real-Time Transcription Powered by OpenAI Whisper',
     long_description = long_description,
     long_description_content_type='text/markdown',
 )
