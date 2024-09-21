@@ -5,11 +5,10 @@
 </br>
 </br>
 <kbd>
-<img src="./whisperflow/static/whisper-flow.png" width="256px"> 
 </kbd>
 </div>
 
-## About The Project
+## About The Project ?
 
 ### OpenAI Whisper 
 OpenAI [Whisper](https://github.com/openai/whisper) is a versatile speech recognition model designed for general use. Trained on a vast and varied audio dataset, Whisper can handle tasks such as multilingual speech recognition, speech translation, and language identification. It is commonly used for batch transcription, where you provide the entire audio or video file to Whisper, which then converts the speech into text. This process is not done in real-time; instead, Whisper processes the files and returns the text afterward, similar to handing over a recording and receiving the transcript later.
