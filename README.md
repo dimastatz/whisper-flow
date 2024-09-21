@@ -5,9 +5,9 @@
 </br>
 </br>
 <kbd>
-![](https://github.com/dimastatz/whisper-flow/blob/main/docs/imgs/whisper-flow.png)
 <img src="https://github.com/dimastatz/whisper-flow/blob/main/docs/imgs/whisper-flow.png" width="256px"> 
 </kbd>
+![](https://github.com/dimastatz/whisper-flow/blob/main/docs/imgs/whisper-flow.png)
 </div>
 
 
