@@ -6,6 +6,7 @@
 </br>
 <kbd>
 <img src="https://github.com/dimastatz/whisper-flow/blob/main/docs/imgs/whisper-flow.png" width="256px"> 
+<img src="./whisperflow/static/whisper-flow.png" width="256px"> 
 </kbd>
 </div>
 
