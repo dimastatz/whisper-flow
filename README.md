@@ -5,7 +5,7 @@
 </br>
 </br>
 <kbd>
-<img src="./whisperflow/static/whisper-flow.png" width="128px"> 
+<img src="./whisperflow/static/whisper-flow.png" width="256px"> 
 </kbd>
 </div>
 
