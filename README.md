@@ -9,8 +9,6 @@
 </kbd>
 </div>
 
-![](https://github.com/dimastatz/whisper-flow/blob/main/docs/imgs/whisper-flow.png)
-
 ## About The Project
 
 ### OpenAI Whisper 
