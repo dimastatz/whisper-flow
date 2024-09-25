@@ -4,6 +4,7 @@ audio  from the mic to whisper flow
 requires pip install PyAudio
 """
 
+import json
 import asyncio
 import pyaudio
 import websockets
@@ -40,10 +41,11 @@ async def receive_transcription(websocket):
     """print transcription"""
     while True:
         await asyncio.sleep(0.01)
-        text_data = await websocket.recv()
-        is_partial = text_data["is_partial"]
-        text = text_data["data"]["text"]
-        print(f"{is_partial} - {text}")
+        try:
+            result = json.loads(websocket.recv())
+            print(result["is_partial"], round(result["time"], 2), result["data"]["text"]) 
+        except websockets.WebSocketTimeoutException:
+            print("No transcription available")
 
 
 asyncio.run(start_transcription())
