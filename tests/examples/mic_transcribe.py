@@ -39,8 +39,11 @@ async def capture_audio(websocket: websockets.WebSocketClientProtocol):
 async def receive_transcription(websocket):
     """print transcription"""
     while True:
+        await asyncio.sleep(0.01)
         text_data = await websocket.recv()
-        print(text_data)
+        is_partial = text_data["is_partial"]
+        text = text_data["data"]["text"]
+        print(f"{is_partial} - {text}")
 
 
 asyncio.run(start_transcription())
