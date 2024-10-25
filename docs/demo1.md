@@ -1,5 +1,5 @@
 
-# Demo 1: Performance Benchmark of WHisper-Flow
+# Demo 1: Performance Benchmark of Whisper-Flow
 
 ## Prompt:
 
