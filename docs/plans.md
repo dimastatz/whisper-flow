@@ -29,11 +29,11 @@ Key features include:
 LitMind is designed for readers seeking a more immersive, reflective experience with their books. Whether for personal growth, study, or enjoyment, LitMind’s interactive approach brings literature to life, creating an unparalleled digital reading journey.
 
 
-
 ## MetaVox - Live editor - movies narrator to any language
 A SaaS platform that automatically translates and narrates YouTube videos into multiple languages for global reach. Users upload or link their original video, and the platform handles everything from audio translation to narration, encoding, and re-upload. For example, an Italian travel blogger could use the service to narrate their videos in English and German, making them accessible to a broader audience.
 
 Key Features:
+
 - Automated Translation and Voiceover – Supports multiple languages with natural-sounding AI narration.
 - One-Click Encoding and Re-Upload – Processes the original video and re-uploads it in new languages.
 - Localization Options – Customizes tone and dialect for target audiences.
@@ -41,6 +41,12 @@ Key Features:
 - Analytics – Engagement metrics per language for performance insights.
 
 ## SlideCrafter - Create slides and slides narration from a link or document
-[TBD]()
+A new SAAS platform that instantly turns Google Slides and Microsoft PowerPoint presentations into narrated video clips. Ideal for professionals, educators, and content creators, this tool simplifies the process of creating engaging presentations by adding voice narration and exporting to video format with just a few clicks.
 
+Key Features:
+
+- Automatic Slide Narration: Simply type or speak your script, and the software will narrate each slide using natural-sounding, AI-powered voices.
+- Video Clip Export: Instantly create high-quality, sharable video clips of your narrated presentations in multiple formats, making it ideal for remote and asynchronous communication.
+- Built-In Editing Tools: Easily edit narration, timing, and transitions, giving users complete control over the final presentation without needing extensive video editing skills.
+- Customizable Branding: Add logos, watermarks, and color schemes to match your brand, allowing for polished and professional presentations every time.
 
