@@ -58,6 +58,7 @@ elif [ $1 = "-run-server" ]; then
     uvicorn whisperflow.fast_server:app --host 0.0.0.0 --port 8181
 elif [ $1 = "-test-package" ]; then
     echo "Running WhisperFlow package setup"
+    # pip install twine
     # pip install wheel
     python setup.py sdist bdist_wheel
     rm -rf .venv_test
