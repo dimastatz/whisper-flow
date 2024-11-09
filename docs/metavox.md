@@ -1,4 +1,5 @@
-# Metavox Two-Pager: Narrate Video Content in Different Languages
+# Metavox Narrate Video Content in Different Languages
+
 ## Problem Statement
 Content creators, such as YouTube bloggers, face challenges in expanding their reach internationally due to language barriers. While subtitles are commonly used, they don’t offer the immersive experience that narration in the viewer's native language provides. Many creators lack the resources or technical expertise to dub their content, limiting their ability to engage non-native audiences. For creators seeking to grow their international audience, an accessible, automated solution to translate and narrate videos in different languages is essential.
 
