@@ -28,7 +28,8 @@ Customized and Extended Versions for Enterprises:
 - Offer customized solutions for enterprises that need specialized versions of your library. Tailoring your library to fit specific enterprise needs can justify a substantial fee.
 Branded Merchandise or Community-Driven Products:
 
-If your library has a strong community, you might consider selling branded merchandise or offering a membership that comes with additional perks, like exclusive content, private webinars, or early access to new features.
+- If your library has a strong community, you might consider selling branded merchandise or offering a membership that comes with additional perks, like exclusive content, private webinars, or early access to new features.
+
 Choosing the right monetization approach will depend on the library’s audience, the value it provides, and the community's needs. Combining a few of these methods can create sustainable revenue without compromising the library’s open-source values.
 
 
