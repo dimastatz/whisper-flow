@@ -44,3 +44,4 @@ Choosing the right monetization approach will depend on the library’s audience
 These strategies will allow us to maintain open access for the community while generating revenue from enterprises and SaaS users.
 
 
+Is this submission being made to claim treaty benefits?
