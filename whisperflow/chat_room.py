@@ -9,7 +9,7 @@ import asyncio
 class ChatRoom:
     """
     A class enabling real-time communication with microphone input and speaker output.
-    It supports speech-to-text (STT) and text-to-speech (TTS) 
+    It supports speech-to-text (STT) and text-to-speech (TTS)
     processing, with an optional handler for custom text analysis.
     """
 
