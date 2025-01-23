@@ -22,6 +22,12 @@ class ChatRoom:
         while self.chat_started:
             await asyncio.sleep(0.01)
 
+            # capture audio
+
+            # process audio
+
+            # play audio
+
     def stop_chat(self):
         """stop chat and relase resources"""
         self.chat_started = False
