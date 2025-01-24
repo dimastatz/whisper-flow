@@ -31,25 +31,13 @@ class ChatRoom:
             start_control(),
             self.listener(self.audio_chunks),
             self.processor(self.audio_chunks, self.text_result),
-            self.speaker(self.audio_chunks, self.text_result)
+            self.speaker(self.text_result)
         )
         
         async def start_control():
             while self.chat_started:
                 await asyncio.sleep(0.01)
                 
-                if self.audio_chunks.empty():
-                    continue
-
-                chunk = self.audio_chunks.get()
-                
-
-                if not self.text_result.empty():
-                    text = self.text_result.get()
-                    if self.processor:
-                        response = self.processor(text)
-                    else:
-                        self.speaker.play(response)
             
     def stop_chat(self):
         """stop chat and relase resources"""
