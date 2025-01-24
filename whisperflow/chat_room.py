@@ -3,6 +3,7 @@ Implements conversation loop: capture
 audio -> speech to text -> custom action -> text to speech -> play audio 
 """
 
+import queue
 import asyncio
 
 
@@ -13,21 +14,43 @@ class ChatRoom:
     processing, with an optional handler for custom text analysis.
     """
 
-    def __init__(self):
+    def __init__(self, listener, speaker, processor):
         self.chat_started = False
-
+        self.audio_chunks = queue.Queue()
+        self.text_result = queue.Queue()
+        self.listener = listener
+        self.speaker = speaker
+        self.processor = processor
+        
     async def start_chat(self):
         """start chat by listening to mic"""
         self.chat_started = True
-        while self.chat_started:
-            await asyncio.sleep(0.01)
 
-            # capture audio
+        # start listener and processor
+        await asyncio.gather(
+            start_control(),
+            self.listener(self.audio_chunks),
+            self.processor(self.audio_chunks, self.text_result),
+            self.speaker(self.audio_chunks, self.text_result)
+        )
+        
+        async def start_control():
+            while self.chat_started:
+                await asyncio.sleep(0.01)
+                
+                if self.audio_chunks.empty():
+                    continue
 
-            # process audio
+                chunk = self.audio_chunks.get()
+                
 
-            # play audio
-
+                if not self.text_result.empty():
+                    text = self.text_result.get()
+                    if self.processor:
+                        response = self.processor(text)
+                    else:
+                        self.speaker.play(response)
+            
     def stop_chat(self):
         """stop chat and relase resources"""
         self.chat_started = False
