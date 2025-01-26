@@ -21,7 +21,7 @@ class ChatRoom:
         self.listener = listener
         self.speaker = speaker
         self.processor = processor
-        
+
     async def start_chat(self):
         """start chat by listening to mic"""
         self.chat_started = True
@@ -31,14 +31,13 @@ class ChatRoom:
             start_control(),
             self.listener(self.audio_chunks),
             self.processor(self.audio_chunks, self.text_result),
-            self.speaker(self.text_result)
+            self.speaker(self.text_result),
         )
-        
+
         async def start_control():
             while self.chat_started:
                 await asyncio.sleep(0.01)
-                
-            
+
     def stop_chat(self):
         """stop chat and relase resources"""
         self.chat_started = False
