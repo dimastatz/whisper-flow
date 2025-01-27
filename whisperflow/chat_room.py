@@ -24,6 +24,11 @@ class ChatRoom:
 
     async def start_chat(self):
         """start chat by listening to mic"""
+
+        async def start_control():
+            while self.chat_started:
+                await asyncio.sleep(0.01)
+
         self.chat_started = True
 
         # start listener and processor
@@ -33,10 +38,6 @@ class ChatRoom:
             self.processor(self.audio_chunks, self.text_result),
             self.speaker(self.text_result),
         )
-
-        async def start_control():
-            while self.chat_started:
-                await asyncio.sleep(0.01)
 
     def stop_chat(self):
         """stop chat and relase resources"""
