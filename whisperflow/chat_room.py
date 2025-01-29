@@ -40,5 +40,5 @@ class ChatRoom:
         )
 
     def stop_chat(self):
-        """stop chat and relase resources"""
+        """stop chat and release resources"""
         self.chat_started = False
