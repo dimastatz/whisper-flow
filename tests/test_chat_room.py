@@ -35,7 +35,10 @@ async def speaker_mock(queue_in: queue.Queue, stop_event: asyncio.Event):
 async def test_chat_room():
     """mock playing sound"""
     room = ChatRoom(listener_mock, speaker_mock, processor_mock)
-    await room.start_chat()
-    await asyncio.sleep(0.1)
-    room.stop_chat()
+
+    async def stop_chat():
+        await asyncio.sleep(1)
+        room.stop_chat()
+
+    await asyncio.gather(room.start_chat(), stop_chat())
     assert room.stop_chat_event.is_set()
