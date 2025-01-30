@@ -37,4 +37,3 @@ class ChatRoom:
         """stop chat and release resources"""
         self.stop_chat_event.set()
         assert self.stop_chat_event.is_set()
-        
