@@ -42,7 +42,7 @@ async def websocket_endpoint(websocket: WebSocket):
 
     try:
         await websocket.accept()
-        session = st.TrancribeSession(transcribe_async, send_back_async)
+        session = st.TranscribeSession(transcribe_async, send_back_async)
         sessions[session.id] = session
 
         while True:
