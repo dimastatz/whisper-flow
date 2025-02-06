@@ -58,7 +58,7 @@ def should_close_segment(result: dict, prev_result: dict, cycles, max_cycles=1):
     ).get("text", "")
 
 
-class TrancribeSession:  # pylint: disable=too-few-public-methods
+class TranscribeSession:  # pylint: disable=too-few-public-methods
     """transcription state"""
 
     def __init__(self, transcribe_async, send_back_async) -> None:
