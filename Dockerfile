@@ -4,15 +4,14 @@ FROM python:3.11-slim-buster
 
 # Combine multiple apt-get to reduce docker layres
 RUN apt-get update && apt-get install -y \
-    ffmpeg \
-    tesseract-ocr-all \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    libasound-dev libportaudio2 libportaudiocpp0 portaudio19-dev \
+    ffmpeg 
     
     
 WORKDIR /app
 
 COPY requirements.txt requirements.txt
+RUN pip3 install --upgrade pip
 RUN pip3 install -r requirements.txt
 COPY . .
 
