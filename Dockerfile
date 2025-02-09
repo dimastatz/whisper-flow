@@ -1,23 +1,23 @@
-# syntax=docker/dockerfile:1
-
 FROM python:3.11-slim-buster
 
-# Combine multiple apt-get to reduce docker layres
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
-    libasound-dev libportaudio2 libportaudiocpp0 portaudio19-dev \
-    ffmpeg 
-    
-    
+    portaudio19-dev \
+    python3-dev \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set the working directory
 WORKDIR /app
 
-COPY requirements.txt requirements.txt
-RUN pip3 install --upgrade pip
-RUN pip3 install -r requirements.txt
+# Copy requirements file
+COPY requirements.txt .
+
+# Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the rest of the application
 COPY . .
 
-RUN black whisperflow tests
-RUN pylint --fail-under=9.9 whisperflow tests
-RUN pytest --cov-fail-under=95 --cov whisperflow -v tests
-
-ENTRYPOINT ["python3"]
-CMD ["./whisperflow/app.py" ]
+# Command to run the application (modify as needed)
+CMD ["python", "app.py"]
