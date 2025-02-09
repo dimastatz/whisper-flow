@@ -20,9 +20,8 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Install prerequisites
-      run: sudo apt-get update && sudo apt-get install -y portaudio19-dev \
-            python3-dev \
-            build-essential && sudo rm -rf /var/lib/apt/lists/*
+      run: sudo apt-get update && sudo apt-get install -y python3 python3-pip python3-dev \
+            portaudio19-dev build-essential && rm -rf /var/lib/apt/lists/*
     - name: Set up Python 3.10
       uses: actions/setup-python@v3
       with:
