@@ -5,7 +5,7 @@ import asyncio
 import pytest
 
 from whisperflow.chat_room import ChatRoom
-from whisperflow.audio.microphone import capture_audio
+
 
 
 async def listener_mock(queue_in: queue.Queue, stop_event: asyncio.Event):
@@ -44,3 +44,5 @@ async def test_chat_room():
 
     await asyncio.gather(room.start_chat(), stop_chat())
     assert room.stop_chat_event.is_set()
+
+
