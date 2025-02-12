@@ -44,5 +44,3 @@ async def test_chat_room():
 
     await asyncio.gather(room.start_chat(), stop_chat())
     assert room.stop_chat_event.is_set()
-
-
