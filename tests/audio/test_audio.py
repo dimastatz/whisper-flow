@@ -1,8 +1,8 @@
 """ test chat room """
 
 import queue
-import pytest
 import asyncio
+import pytest
 
 
 from whisperflow.audio.microphone import capture_audio
