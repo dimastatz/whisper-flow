@@ -42,7 +42,7 @@ elif [ $1 = "-docker" ]; then
     docker rm whisperflow-container
     docker rmi whisperflow-image
     # build docker and run
-    docker build --tag whisperflow-image --build-arg CACHEBUST=$(date +%s) .
+    docker build --tag whisperflow-image --build-arg CACHEBUST=$(date +%s) . --file Dockerfile.test
     docker run --name whisperflow-container -p 8888:8888 -d whisperflow-image
 elif [ $1 = "-benchmark" ]; then
     echo "Running WhisperFlow Server"
