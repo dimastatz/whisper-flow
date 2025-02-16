@@ -14,7 +14,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Build the Docker image
+    - name: Build the Docker Test image
       run: docker build . --file Dockerfile.test --tag whisperflow-docker:$(date +%s)
 
       
