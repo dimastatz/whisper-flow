@@ -10,6 +10,6 @@ RUN apt-get update && apt-get install -y \
 # Set the working directory
 WORKDIR /app
 
-# Install whisperflow package
+# Install whisper-flow package
 RUN pip install whisperflow
 

@@ -9,12 +9,17 @@ on:
 jobs:
 
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker Test image
-      run: docker build . --file Dockerfile.test --tag whisperflow-docker:$(date +%s)
+      run: docker build . --file Dockerfile.test --tag whisperflow-docker-test:$(date +%s)
+
+  test-package:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build the Docker with Package
+      run: docker build . --file Dockerfile --tag whisperflow-docker:$(date +%s)
 
       
