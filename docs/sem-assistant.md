@@ -50,7 +50,7 @@ For Engineering Teams:
 
 ## Technology Stack
 AI & NLP: GPT-based models for text summarization and sentiment analysis.
-Data Analytics: Machine learning models for team productivity tracking.
+Data Analytics: Building RAG that incorporates best Engineering Manager Books, training models in the future.
 Integrations: API-based connectivity with Jira, GitHub, Slack, and CI/CD tools.
 Mobile & Web: Accessible through a management dashboard and chatbots.
 
@@ -60,11 +60,12 @@ The AI-powered workplace solutions market is projected to reach $150 billion by 
 Engineering leaders are increasingly adopting AI-driven productivity tools to optimize team efficiency.
 
 ## Business Model
-B2B SaaS Subscription: Monthly fee per manager or per engineering team.
-Enterprise Licensing: Large-scale deployments for tech companies and startups.
+Two options:
+- 1. Basic: Open Source Framework + Premium features with monthly fee for companies.
+- 2. Advanced: B2B SaaS Subscription: Monthly fee per manager or per engineering team.
 
 ## Development Roadmap
-- Phase 1 (3-6 Months): Prototype development, AI model training, and user feedback collection.
+- Phase 1 (3-6 Months): Open Source Framework Development with basic functionality, should be good enough to show the capabilities, promoting on Medium, and user feedback collection. KPI: 1000 Github stars
 - Phase 2 (6-12 Months): Beta launch, integrations with major engineering tools, and pilot testing with selected SEMs.
 - Phase 3 (12+ Months): Full-scale deployment, AI-driven improvements based on user behavior, and expansion to additional management features.
 
