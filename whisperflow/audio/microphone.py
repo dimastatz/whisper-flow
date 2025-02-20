@@ -30,6 +30,6 @@ async def capture_audio(queue_chunks: queue.Queue, stop_event: asyncio.Event):
     audio.terminate()
 
 
-def is_silent(data, silence_threshold = 500):
+def is_silent(data, silence_threshold=500):
     """is chunk is silence"""
     return np.max(np.frombuffer(data, dtype=np.int16)) < silence_threshold
