@@ -5,6 +5,7 @@ capture audio from microphone
 import queue
 import asyncio
 import pyaudio
+import numpy as np
 
 
 async def capture_audio(queue_chunks: queue.Queue, stop_event: asyncio.Event):
@@ -27,3 +28,8 @@ async def capture_audio(queue_chunks: queue.Queue, stop_event: asyncio.Event):
 
     stream.close()
     audio.terminate()
+
+
+def is_silent(data, silence_threshold = 500):
+    """is chunk is silence"""
+    return np.max(np.frombuffer(data, dtype=np.int16)) < silence_threshold
