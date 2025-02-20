@@ -38,3 +38,30 @@ def test_is_silent():
     assert not mic.is_silent(
         threshold_data
     ), "Threshold-level data should not be detected as silent"
+
+
+@pytest.mark.asyncio
+async def test_play_audio():
+    """
+    Test the play_audio function by adding dummy audio data to a queue,
+    running the function, and ensuring the queue is empty after processing.
+    """
+    queue_chunks = queue.Queue()
+    stop_event = asyncio.Event()
+
+    # Add some dummy audio data to the queue
+    dummy_data = b"\x00\x01" * 1024 * 10  # 2MB per sample, 1024 samples
+    queue_chunks.put(dummy_data)
+
+    # Run play_audio in a separate task
+    play_task = asyncio.create_task(mic.play_audio(queue_chunks, stop_event))
+
+    # Allow some time for play_audio to process the queue
+    await asyncio.sleep(0.1)
+
+    # Stop the play_audio function
+    stop_event.set()
+    await play_task
+
+    # Check that the queue is empty after processing
+    assert queue_chunks.empty()
