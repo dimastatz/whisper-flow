@@ -46,7 +46,7 @@ async def play_audio(queue_chunks: queue.Queue, stop_event: asyncio.Event):
         if not queue_chunks.empty():
             data = queue_chunks.get()
             stream.write(data)
-        await asyncio.sleep(0.01)
+        await asyncio.sleep(0.001)
 
     stream.close()
     audio.terminate()

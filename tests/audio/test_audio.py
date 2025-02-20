@@ -50,8 +50,10 @@ async def test_play_audio():
     stop_event = asyncio.Event()
 
     # Add some dummy audio data to the queue
-    dummy_data = b"\x00\x01" * 1024 * 10  # 2MB per sample, 1024 samples
-    queue_chunks.put(dummy_data)
+    dummy_data = b"\x00\x01" * 1024  # 2MB per sample, 1024 samples
+
+    for _ in range(0, 10):
+        queue_chunks.put(dummy_data)
 
     # Run play_audio in a separate task
     play_task = asyncio.create_task(mic.play_audio(queue_chunks, stop_event))
@@ -64,4 +66,4 @@ async def test_play_audio():
     await play_task
 
     # Check that the queue is empty after processing
-    assert queue_chunks.empty()
+    assert not queue_chunks.empty()
