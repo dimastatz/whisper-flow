@@ -1,0 +1,53 @@
+<mxfile host="65bd71144e">
+    <diagram id="lUTxgxBXC2m83WaHa4va" name="Page-1">
+        <mxGraphModel dx="950" dy="772" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+            </root>
+        </mxGraphModel>
+    </diagram>
+    <diagram id="eGVr7qu-QeYIO0bdc13v" name="Page-1">
+        <mxGraphModel dx="950" dy="772" grid="1" gridSize="1" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="start" value="Start" style="ellipse;fillColor=#D5E8D4;strokeColor=#82B366;sketch=1;curveFitting=1;jiggle=2;fontFamily=Comic Sans MS;" parent="1" vertex="1">
+                    <mxGeometry x="250" y="50" width="100" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="main_loop" value="Main Loop (main)" style="rounded=1;fillColor=#FFF2CC;strokeColor=#D6B656;sketch=1;curveFitting=1;jiggle=2;fontFamily=Comic Sans MS;" parent="1" vertex="1">
+                    <mxGeometry x="200" y="120" width="200" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="record_audio" value="Record Audio" style="rounded=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;sketch=1;curveFitting=1;jiggle=2;fontFamily=Comic Sans MS;" parent="1" vertex="1">
+                    <mxGeometry x="200" y="200" width="200" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="user_speaking" value="User Speaking?" style="rhombus;fillColor=#F8CECC;strokeColor=#B85450;sketch=1;curveFitting=1;jiggle=2;fontFamily=Comic Sans MS;" parent="1" vertex="1">
+                    <mxGeometry x="230" y="270" width="150" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="stop_playback" value="Stop Playback Task" style="rounded=1;fillColor=#E1D5E7;strokeColor=#9673A6;sketch=1;curveFitting=1;jiggle=2;fontFamily=Comic Sans MS;" parent="1" vertex="1">
+                    <mxGeometry x="50" y="340" width="200" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="silence_detected" value="Silence Detected?" style="rhombus;fillColor=#F8CECC;strokeColor=#B85450;sketch=1;curveFitting=1;jiggle=2;fontFamily=Comic Sans MS;" parent="1" vertex="1">
+                    <mxGeometry x="230" y="420" width="150" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="play_audio" value="Play Audio" style="rounded=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;sketch=1;curveFitting=1;jiggle=2;fontFamily=Comic Sans MS;" parent="1" vertex="1">
+                    <mxGeometry x="200" y="500" width="200" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="playback_interrupted" value="Playback &#10;Interrupted?" style="rhombus;fillColor=#F8CECC;strokeColor=#B85450;sketch=1;curveFitting=1;jiggle=2;fontFamily=Comic Sans MS;" parent="1" vertex="1">
+                    <mxGeometry x="230" y="570" width="151" height="65" as="geometry"/>
+                </mxCell>
+                <mxCell id="loop_back" value="Loop Back to Main" style="rounded=1;fillColor=#FFF2CC;strokeColor=#D6B656;sketch=1;curveFitting=1;jiggle=2;fontFamily=Comic Sans MS;" parent="1" vertex="1">
+                    <mxGeometry x="200" y="650" width="200" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge1" parent="1" source="start" target="main_loop" edge="1"/>
+                <mxCell id="edge2" parent="1" source="main_loop" target="record_audio" edge="1"/>
+                <mxCell id="edge3" parent="1" source="record_audio" target="user_speaking" edge="1"/>
+                <mxCell id="edge4" parent="1" source="user_speaking" target="stop_playback" edge="1"/>
+                <mxCell id="edge5" parent="1" source="user_speaking" target="silence_detected" edge="1"/>
+                <mxCell id="edge6" parent="1" source="silence_detected" target="play_audio" edge="1"/>
+                <mxCell id="edge7" parent="1" source="play_audio" target="playback_interrupted" edge="1"/>
+                <mxCell id="edge8" parent="1" source="playback_interrupted" target="loop_back" edge="1"/>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
