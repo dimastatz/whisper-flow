@@ -10,7 +10,7 @@ import numpy as np
 
 async def capture_audio(queue_chunks: queue.Queue, stop_event: asyncio.Event):
     """capture the mic stream"""
-    chunk, rate, record_sec = 1024, 16000, 1
+    chunk, rate = 1024, 16000
     audio = pyaudio.PyAudio()
     stream = audio.open(
         format=pyaudio.paInt16,
@@ -22,7 +22,7 @@ async def capture_audio(queue_chunks: queue.Queue, stop_event: asyncio.Event):
 
     while not stop_event.is_set():
         data = stream.read(chunk)
-        queue_chunks.put(data)
+        queue_chunks.put_nowait(data)
         await asyncio.sleep(0.001)
 
     stream.close()
