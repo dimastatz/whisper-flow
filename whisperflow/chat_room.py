@@ -40,7 +40,7 @@ class ChatRoom:
         assert self.stop_chat_event.is_set()
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     # Create a dummy processor
     async def dummy_proc(audio: queue.Queue, text: queue.Queue, stop: asyncio.Event):
         """dummy processor"""
