@@ -5,6 +5,7 @@ audio -> speech to text -> custom action -> text to speech -> play audio
 
 import queue
 import asyncio
+import whisperflow.audio.microphone as mic
 
 
 class ChatRoom:
@@ -37,3 +38,23 @@ class ChatRoom:
         """stop chat and release resources"""
         self.stop_chat_event.set()
         assert self.stop_chat_event.is_set()
+
+
+if __name__ == "__main__":
+    # Create a dummy processor
+    async def dummy_proc(audio: queue.Queue, text: queue.Queue, stop: asyncio.Event):
+        """dummy processor"""
+        while not stop.is_set():
+            if not audio.empty():
+                data = audio.get()
+                text.put(data)
+            await asyncio.sleep(0.001)
+
+    chatRoom = ChatRoom(mic.capture_audio, mic.play_audio, dummy_proc)
+
+    try:
+        # Run the async main function
+        chatRoom.start_chat()
+    except KeyboardInterrupt:
+        chatRoom.stop_chat()
+        print("Chat stopped")
