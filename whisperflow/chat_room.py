@@ -5,6 +5,7 @@ audio -> speech to text -> custom action -> text to speech -> play audio
 
 import queue
 import asyncio
+import pytest
 import whisperflow.audio.microphone as mic
 
 
@@ -40,7 +41,8 @@ class ChatRoom:
         assert self.stop_chat_event.is_set()
 
 
-if __name__ == "__main__":  # pragma: no cover
+@pytest.mark.skip(reason="requires audio hardware")
+def main():
     # Create a dummy processor
     async def dummy_proc(audio: queue.Queue, text: queue.Queue, stop: asyncio.Event):
         """dummy processor"""
@@ -50,11 +52,15 @@ if __name__ == "__main__":  # pragma: no cover
                 text.put(data)
             await asyncio.sleep(0.001)
 
-    chatRoom = ChatRoom(mic.capture_audio, mic.play_audio, dummy_proc)
+    chat_room = ChatRoom(mic.capture_audio, mic.play_audio, dummy_proc)
 
     try:
         # Run the async main function
-        chatRoom.start_chat()
+        chat_room.start_chat()
     except KeyboardInterrupt:
-        chatRoom.stop_chat()
+        chat_room.stop_chat()
         print("Chat stopped")
+
+
+if __name__ == "__main__":
+    main()
