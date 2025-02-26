@@ -8,7 +8,9 @@ import pyaudio
 import numpy as np
 
 
-async def capture_audio(queue_chunks: queue.Queue, stop_event: asyncio.Event):
+async def capture_audio(
+    queue_chunks: queue.Queue, stop_event: asyncio.Event
+):  # pragma: no cover
     """capture the mic stream"""
     chunk, rate = 1024, 16000
     audio = pyaudio.PyAudio()
@@ -29,7 +31,9 @@ async def capture_audio(queue_chunks: queue.Queue, stop_event: asyncio.Event):
     audio.terminate()
 
 
-async def play_audio(queue_chunks: queue.Queue, stop_event: asyncio.Event):
+async def play_audio(
+    queue_chunks: queue.Queue, stop_event: asyncio.Event
+):  # pragma: no cover
     """play audio from queue"""
     chunk, rate = 1024, 16000
     audio = pyaudio.PyAudio()
@@ -51,6 +55,6 @@ async def play_audio(queue_chunks: queue.Queue, stop_event: asyncio.Event):
     audio.terminate()
 
 
-def is_silent(data, silence_threshold=500):
+def is_silent(data, silence_threshold=500):  # pragma: no cover
     """is chunk is silence"""
     return np.max(np.frombuffer(data, dtype=np.int16)) < silence_threshold

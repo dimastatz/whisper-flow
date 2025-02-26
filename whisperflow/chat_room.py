@@ -42,7 +42,8 @@ class ChatRoom:
 
 
 @pytest.mark.skip(reason="requires audio hardware")
-def main():
+def main():  # pragma: no cover
+    '''main function that runs the chat room'''
     # Create a dummy processor
     async def dummy_proc(audio: queue.Queue, text: queue.Queue, stop: asyncio.Event):
         """dummy processor"""
