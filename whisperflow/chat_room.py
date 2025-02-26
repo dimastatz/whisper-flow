@@ -17,8 +17,8 @@ class ChatRoom:
     """
 
     def __init__(self, listener, speaker, processor):
-        self.audio_chunks = queue.Queue()
-        self.text_result = queue.Queue()
+        self.audio_in = queue.Queue()
+        self.audio_out = queue.Queue()
         self.listener = listener
         self.speaker = speaker
         self.processor = processor
@@ -30,9 +30,9 @@ class ChatRoom:
 
         # start listener and processor
         await asyncio.gather(
-            self.listener(self.audio_chunks, self.stop_chat_event),
-            self.processor(self.audio_chunks, self.text_result, self.stop_chat_event),
-            self.speaker(self.text_result, self.stop_chat_event),
+            self.listener(self.audio_in, self.stop_chat_event),
+            self.processor(self.audio_in, self.audio_out, self.stop_chat_event),
+            self.speaker(self.audio_out, self.stop_chat_event),
         )
 
     def stop_chat(self):
@@ -43,14 +43,17 @@ class ChatRoom:
 
 @pytest.mark.skip(reason="requires audio hardware")
 def main():  # pragma: no cover
-    '''main function that runs the chat room'''
+    """main function that runs the chat room"""
+
     # Create a dummy processor
-    async def dummy_proc(audio: queue.Queue, text: queue.Queue, stop: asyncio.Event):
+    async def dummy_proc(
+        audio_in: queue.Queue, audio_out: queue.Queue, stop: asyncio.Event
+    ):
         """dummy processor"""
         while not stop.is_set():
-            if not audio.empty():
-                data = audio.get()
-                text.put(data)
+            if not audio_in.empty():
+                data = audio_in.get()
+                audio_out.put(data)
             await asyncio.sleep(0.001)
 
     chat_room = ChatRoom(mic.capture_audio, mic.play_audio, dummy_proc)
