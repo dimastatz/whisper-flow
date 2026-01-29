@@ -3,6 +3,7 @@
 import logging
 from typing import List
 from fastapi import FastAPI, WebSocket, Form, File, UploadFile
+from starlette.websockets import WebSocketDisconnect
 
 from whisperflow import __version__
 import whisperflow.streaming as st
@@ -33,6 +34,7 @@ def transcribe_pcm_chunk(
 async def websocket_endpoint(websocket: WebSocket):
     """webscoket implementation"""
     model = ts.get_model()
+    session = None
 
     async def transcribe_async(chunks: list):
         return await ts.transcribe_pcm_chunks_async(model, chunks)
@@ -48,7 +50,12 @@ async def websocket_endpoint(websocket: WebSocket):
         while True:
             data = await websocket.receive_bytes()
             session.add_chunk(data)
-    except Exception as exception:  # pylint: disable=broad-except
+    except WebSocketDisconnect:
+        if session:
+            await session.stop()
+    except Exception as exception:  # pragma: no cover
         logging.error(exception)
-        await session.stop()
-        await websocket.close()
+        if session:
+            await session.stop()
+        if websocket.client_state.name != "DISCONNECTED":
+            await websocket.close()
