@@ -100,3 +100,24 @@ async def test_ws(chunk_size=4096):
         websocket.close()
 
     assert client
+
+
+def test_health():
+    """test health endpoint"""
+    client = ut.TestClient(fs.app)
+    response = client.get("/health")
+    assert response.status_code == 200
+    assert "Whisper Flow" in response.text
+
+
+def test_transcribe_pcm_chunk():
+    """test transcribe pcm chunk endpoint"""
+    client = ut.TestClient(fs.app)
+    res = ut.load_resource("3081-166546-0000")
+    files = [("files", ("audio.pcm", res["audio"], "application/octet-stream"))]
+    data = {"model_name": "tiny.en.pt"}
+    response = client.post("/transcribe_pcm_chunk", files=files, data=data)
+    assert response.status_code == 200
+    result = response.json()
+    assert "text" in result
+    assert len(result["text"]) > 0

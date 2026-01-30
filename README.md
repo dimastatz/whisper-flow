@@ -92,57 +92,235 @@ min      154.700000
 max      470.700000
 ```
 
+### Prerequisites
+
+Before installing WhisperFlow, ensure you have the following:
+
+- **Python**: 3.8 or higher (tested with Python 3.12)
+- **PortAudio**: Required for PyAudio (audio I/O library)
+
+#### Installing PortAudio
+
+**macOS** (using Homebrew):
+```bash
+brew install portaudio
+```
+
+**Linux** (Ubuntu/Debian):
+```bash
+sudo apt-get install portaudio19-dev
+```
+
+**Linux** (Fedora/RHEL):
+```bash
+sudo dnf install portaudio-devel
+```
+
+**Windows**:
+PortAudio is typically bundled with PyAudio wheels on Windows. If you encounter issues, refer to the [PyAudio documentation](https://people.csail.mit.edu/hubert/pyaudio/).
+
 ### How To Use it
 
-#### As a Web Server
-To run WhisperFlow as a web server, start by cloning the repository to your local machine.
+## Quick Start
+
+Get WhisperFlow running in under 5 minutes:
+
 ```bash
+# Clone the repository
 git clone https://github.com/dimastatz/whisper-flow.git
-```
-Then navigate to WhisperFlow folder, create a local venv with all dependencies and run the web server on port 8181.
-```bash
 cd whisper-flow
+
+# Setup environment, install dependencies, and run tests
 ./run.sh -local
+
+# Activate the virtual environment
 source .venv/bin/activate
+
+# Start the server on port 8181
+./run.sh -run-server
+```
+
+The server will be available at `http://localhost:8181`. Visit `http://localhost:8181/health` to verify it's running.
+
+---
+
+## Development Setup
+
+For contributors and developers:
+
+### 1. Initial Setup
+```bash
+# Clone and enter the directory
+git clone https://github.com/dimastatz/whisper-flow.git
+cd whisper-flow
+
+# Setup environment: creates .venv, installs dependencies, runs tests
+./run.sh -local
+```
+
+**What `-local` does:**
+- Creates a fresh virtual environment (`.venv`)
+- Installs all dependencies from `requirements.txt`
+- Runs `black` formatter on code
+- Runs `pylint` linter (requires 9.9/10 score)
+- Runs all unit tests (requires 95% coverage)
+
+### 2. Running Tests
+```bash
+# Activate environment
+source .venv/bin/activate
+
+# Run tests only (formatting + linting + unit tests)
+./run.sh -test
+```
+
+### 3. Running the Server
+```bash
+# Activate environment
+source .venv/bin/activate
+
+# Start the FastAPI server on port 8181
+./run.sh -run-server
+```
+
+The server provides:
+- **WebSocket endpoint**: `ws://localhost:8181/ws` - Real-time streaming transcription
+- **Health check**: `GET http://localhost:8181/health` - Server status
+- **Batch transcription**: `POST http://localhost:8181/transcribe_pcm_chunk` - Process PCM audio files
+
+### 4. Running Benchmarks
+```bash
+# Activate environment
+source .venv/bin/activate
+
+# Run benchmark tests (starts server, runs tests, stops server)
 ./run.sh -benchmark
 ```
 
-#### As a Python Package
-Set up a WebSocket endpoint for real-time transcription by retrieving the transcription model and creating asynchronous functions for transcribing audio chunks and sending JSON responses. Manage the WebSocket connection by continuously processing incoming audio data. Handle terminate exception to stop the session and close the connection if needed.
+This measures transcription latency and word error rate (WER) using LibriSpeech test data.
 
-Start with installing whisper python package
+---
 
+## Docker Deployment
+
+### Using Docker
+```bash
+# Build and run the Docker container
+./run.sh -docker
+```
+
+**What `-docker` does:**
+- Stops and removes any existing `whisperflow-container`
+- Removes the old `whisperflow-image`
+- Builds a fresh Docker image with all dependencies
+- Runs the container on port 8888
+
+### Manual Docker Setup
+```bash
+# Build the image
+docker build -t whisperflow-image --file Dockerfile.test .
+
+# Run the container
+docker run --name whisperflow-container -p 8181:8181 -d whisperflow-image
+
+# Check logs
+docker logs whisperflow-container
+
+# Stop the container
+docker stop whisperflow-container
+```
+
+---
+
+## Using as a Python Library
+
+Install WhisperFlow as a package to integrate real-time transcription into your own applications:
+
+### Installation
 ```bash
 pip install whisperflow
 ```
 
-Now import whsiperflow and transcriber modules
+### Basic Usage
 
-```Python
+Create a WebSocket endpoint for real-time streaming transcription:
+
+```python
+from fastapi import FastAPI, WebSocket
+from starlette.websockets import WebSocketDisconnect
 import whisperflow.streaming as st
 import whisperflow.transcriber as ts
 
+app = FastAPI()
+
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
+    # Load the Whisper model (default: tiny.en.pt)
     model = ts.get_model()
-
+    
+    # Define transcription callback
     async def transcribe_async(chunks: list):
         return await ts.transcribe_pcm_chunks_async(model, chunks)
-
+    
+    # Define response callback
     async def send_back_async(data: dict):
         await websocket.send_json(data)
-
+    
     try:
         await websocket.accept()
-        session = st.TrancribeSession(transcribe_async, send_back_async)
-
+        
+        # Create transcription session
+        session = st.TranscribeSession(transcribe_async, send_back_async)
+        
+        # Process incoming audio chunks
         while True:
             data = await websocket.receive_bytes()
             session.add_chunk(data)
-    except Exception as exception:
+            
+    except WebSocketDisconnect:
+        # Client disconnected
         await session.stop()
-        await websocket.close()
+    except Exception as exception:
+        # Handle errors
+        await session.stop()
+        if websocket.client_state.name != "DISCONNECTED":
+            await websocket.close()
 ```
+
+### API Reference
+
+**Transcriber Module** (`whisperflow.transcriber`):
+- `get_model(file_name="tiny.en.pt")` - Load a Whisper model
+- `transcribe_pcm_chunks(model, chunks, lang="en")` - Synchronous transcription
+- `transcribe_pcm_chunks_async(model, chunks, lang="en")` - Async transcription
+
+**Streaming Module** (`whisperflow.streaming`):
+- `TranscribeSession(transcribe_fn, send_back_fn)` - Create a streaming session
+- `session.add_chunk(audio_data)` - Add audio chunk for processing
+- `session.stop()` - Stop the transcription session
+
+### Audio Format Requirements
+
+WhisperFlow expects PCM audio data with the following specifications:
+- **Sample Rate**: 16 kHz
+- **Channels**: Mono (1 channel)
+- **Format**: 16-bit signed integer (int16)
+
+---
+
+## Available Commands
+
+All commands are available through `./run.sh`:
+
+| Command | Description |
+|---------|-------------|
+| `./run.sh -local` | Setup environment, install dependencies, run tests |
+| `./run.sh -test` | Run formatter, linter, and unit tests |
+| `./run.sh -run-server` | Start the FastAPI server on port 8181 |
+| `./run.sh -benchmark` | Run performance benchmark tests |
+| `./run.sh -docker` | Build and run Docker container |
+
+---
 #### Roadmap
 - [X] Release v1.0-RC - Includes transcription streaming implementation.
 - [X] Release v1.1 - Bug fixes and implementation of the most requested changes.
