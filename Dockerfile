@@ -1,4 +1,4 @@
-FROM python:3.11-slim-bookworm
+FROM python:3.12-slim-bookworm
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -10,6 +10,17 @@ RUN apt-get update && apt-get install -y \
 # Set the working directory
 WORKDIR /app
 
-# Install whisper-flow package
-RUN pip install whisperflow
+# Copy requirements first to leverage Docker cache
+COPY requirements.txt .
+
+# Install dependencies including the build-time ones we verified
+RUN pip install --upgrade pip wheel && \
+    pip install "setuptools<70" && \
+    pip install -r requirements.txt
+
+# Copy the source code
+COPY . .
+
+# Install the local package
+RUN pip install .
 

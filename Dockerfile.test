@@ -1,4 +1,4 @@
-FROM python:3.11-slim-bookworm
+FROM python:3.12-slim-bookworm
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -14,12 +14,14 @@ WORKDIR /app
 COPY requirements.txt .
 
 # Install dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --upgrade pip wheel && \
+    pip install "setuptools<70" && \
+    pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the application
 COPY . .
 
-RUN rm -rf .venv & python3 -m venv .venv & source .venv/bin/activate \
-    & pip install --upgrade pip & pip install -r ./requirements.txt \ 
-    & black whisperflow tests & pylint --fail-under=9.9 whisperflow tests \
-    & pytest --ignore=tests/benchmark --ignore=tests/audio --cov-fail-under=95 --cov whisperflow -v tests
+# Run formatting, linting, and tests directly on the container's python
+RUN black whisperflow tests && \
+    pylint --fail-under=9.9 whisperflow tests && \
+    pytest --ignore=tests/benchmark --ignore=tests/audio --cov-fail-under=95 --cov whisperflow -v tests
