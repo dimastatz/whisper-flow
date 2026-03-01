@@ -22,5 +22,5 @@ RUN pip install --upgrade pip wheel && \
 COPY . .
 
 # Install the local package
-RUN pip install .
+RUN pip install whisperflow
 
