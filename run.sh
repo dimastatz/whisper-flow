@@ -19,9 +19,18 @@ elif [ $1 = "-local" ]; then
     set -e
     echo "Running format, linter and tests"
     rm -rf .venv
-    python3 -m venv .venv
+
+    # Use python3.12 if available as it's more stable for currently pinned dependencies
+    PYTHON_CMD="python3"
+    if command -v python3.12 >/dev/null 2>&1; then
+        PYTHON_CMD="python3.12"
+    fi
+
+    $PYTHON_CMD -m venv .venv
     source .venv/bin/activate
-    pip install --upgrade pip
+    pip install --upgrade pip wheel
+    # Pin setuptools < 70 for openai-whisper compatibility
+    pip install "setuptools<70"
     pip install -r ./requirements.txt
 
     black whisperflow tests
