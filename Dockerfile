@@ -24,3 +24,5 @@ COPY . .
 # Install the local package
 RUN pip install whisperflow
 
+RUN python -c "import whisperflow; print('whisper-flow installed OK')"
+
