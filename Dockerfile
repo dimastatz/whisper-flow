@@ -24,5 +24,5 @@ COPY . .
 # Install the local package
 RUN pip install whisperflow
 
-RUN python -c "import whisperflow; print('whisper-flow installed OK')"
+RUN python -c "import whisperflow; import whisperflow.transcriber as ts; assert callable(ts.get_model); assert callable(ts.transcribe_pcm_chunks); assert callable(ts.transcribe_pcm_chunks_async); print('whisper-flow installed OK')"
 
