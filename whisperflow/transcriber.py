@@ -2,6 +2,8 @@
 
 import os
 import asyncio
+import threading
+from typing import Optional
 
 import torch
 import numpy as np
@@ -9,18 +11,35 @@ import numpy as np
 import whisper
 from whisper import Whisper
 
+from whisperflow import config
+
 
 models = {}
+_models_lock = threading.Lock()
 
 
-def get_model(file_name="tiny.en.pt") -> Whisper:
-    """load models from disk"""
-    if file_name not in models:
-        path = os.path.join(os.path.dirname(__file__), f"./models/{file_name}")
-        models[file_name] = whisper.load_model(path).to(
-            "cuda" if torch.cuda.is_available() else "cpu"
-        )
-    return models[file_name]
+def resolve_model_path(file_name: str) -> str:
+    """validate a model name and return its path inside the models dir"""
+    models_dir = os.path.join(os.path.dirname(__file__), "models")
+    path = os.path.normpath(os.path.join(models_dir, file_name))
+    if os.path.dirname(path) != models_dir:
+        raise ValueError(f"invalid model name: {file_name}")
+    if not os.path.isfile(path):
+        raise ValueError(f"unknown model: {file_name}")
+    return path
+
+
+def get_model(file_name: Optional[str] = None) -> Whisper:
+    """load a model from disk, caching one shared instance (thread-safe)"""
+    name = file_name or config.DEFAULT_MODEL
+    if name not in models:
+        path = resolve_model_path(name)
+        with _models_lock:
+            if name not in models:
+                models[name] = whisper.load_model(path).to(
+                    "cuda" if torch.cuda.is_available() else "cpu"
+                )
+    return models[name]
 
 
 def transcribe_pcm_chunks(

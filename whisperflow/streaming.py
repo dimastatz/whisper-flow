@@ -1,10 +1,16 @@
-""" test scenario module """
+""" streaming transcription module """
 
 import time
 import uuid
 import asyncio
+import logging
 from queue import Queue
 from typing import Callable
+
+from whisperflow import config
+
+
+LOG = logging.getLogger(__name__)
 
 
 def get_all(queue: Queue) -> list:
@@ -15,10 +21,30 @@ def get_all(queue: Queue) -> list:
     return res
 
 
+def trim_window(window: list, max_size: int) -> list:
+    """keep the window bounded to the most recent max_size chunks"""
+    if len(window) > max_size:
+        return window[-max_size:]
+    return window
+
+
+async def safe_transcribe(transcriber: Callable[[list], dict], window: list):
+    """run the transcriber with a timeout, returning None on error/timeout"""
+    try:
+        return await asyncio.wait_for(
+            transcriber(window), timeout=config.TRANSCRIBE_TIMEOUT
+        )
+    except asyncio.TimeoutError:
+        LOG.warning("transcription timed out after %ss", config.TRANSCRIBE_TIMEOUT)
+    except Exception:  # pylint: disable=broad-except
+        LOG.exception("transcription failed")
+    return None
+
+
 async def transcribe(
     should_stop: list,
     queue: Queue,
-    transcriber: Callable[[list], str],
+    transcriber: Callable[[list], dict],
     segment_closed: Callable[[dict], None],
 ):
     """the transcription loop"""
@@ -28,13 +54,18 @@ async def transcribe(
         start = time.time()
         await asyncio.sleep(0.01)
         window.extend(get_all(queue))
+        window = trim_window(window, config.MAX_WINDOW_CHUNKS)
 
         if not window:
             continue
 
+        data = await safe_transcribe(transcriber, window)
+        if data is None:
+            continue
+
         result = {
             "is_partial": True,
-            "data": await transcriber(window),
+            "data": data,
             "time": (time.time() - start) * 1000,
         }
 

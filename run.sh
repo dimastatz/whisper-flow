@@ -31,7 +31,7 @@ elif [ $1 = "-local" ]; then
     pip install --upgrade pip wheel
     # Pin setuptools < 70 for openai-whisper compatibility
     pip install "setuptools<70"
-    pip install -r ./requirements.txt
+    pip install -r ./requirements-dev.txt
 
     black whisperflow tests
     pylint --fail-under=9.9 whisperflow tests
@@ -73,7 +73,8 @@ elif [ $1 = "-test-package" ]; then
     rm -rf .venv_test
     python3 -m venv .venv_test
     source .venv_test/bin/activate
-    pip install ./dist/whisperflow-0.1.0-py3-none-any.whl
+    VERSION=$(python -c "import whisperflow; print(whisperflow.__version__)")
+    pip install ./dist/whisperflow-$VERSION-py3-none-any.whl
     pytest --ignore=tests/benchmark --cov-fail-under=95 --cov whisperflow -v tests
     # twine upload ./dist/*
 else
