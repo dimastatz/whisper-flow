@@ -3,7 +3,7 @@
 
 # lint / format
 black==23.3.0
-pylint==3.0.3
+pylint==4.0.6
 pylint-fail-under==0.3.0
 
 # test
