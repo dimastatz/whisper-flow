@@ -10,13 +10,13 @@ RUN apt-get update && apt-get install -y \
 # Set the working directory
 WORKDIR /app
 
-# Copy requirements file
-COPY requirements.txt .
+# Copy requirements files
+COPY requirements.txt requirements-dev.txt ./
 
-# Install dependencies
+# Install dependencies (runtime + dev/test)
 RUN pip install --upgrade pip wheel && \
     pip install "setuptools<70" && \
-    pip install --no-cache-dir -r requirements.txt
+    pip install --no-cache-dir -r requirements-dev.txt
 
 # Copy the rest of the application
 COPY . .

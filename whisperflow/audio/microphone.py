@@ -7,54 +7,61 @@ import asyncio
 import pyaudio
 import numpy as np
 
+from whisperflow import config
+
 
 async def capture_audio(
     queue_chunks: queue.Queue, stop_event: asyncio.Event
 ):  # pragma: no cover
-    """capture the mic stream"""
-    chunk, rate = 1024, 16000
+    """capture the mic stream without blocking the event loop"""
+    loop = asyncio.get_running_loop()
     audio = pyaudio.PyAudio()
     stream = audio.open(
         format=pyaudio.paInt16,
         channels=1,
-        rate=rate,
+        rate=config.SAMPLE_RATE,
         input=True,
-        frames_per_buffer=chunk,
+        frames_per_buffer=config.CHUNK_SIZE,
     )
 
-    while not stop_event.is_set():
-        data = stream.read(chunk)
-        queue_chunks.put_nowait(data)
-        await asyncio.sleep(0.001)
-
-    stream.close()
-    audio.terminate()
+    try:
+        while not stop_event.is_set():
+            data = await loop.run_in_executor(None, stream.read, config.CHUNK_SIZE)
+            queue_chunks.put_nowait(data)
+            await asyncio.sleep(0.001)
+    finally:
+        stream.close()
+        audio.terminate()
 
 
 async def play_audio(
     queue_chunks: queue.Queue, stop_event: asyncio.Event
 ):  # pragma: no cover
-    """play audio from queue"""
-    chunk, rate = 1024, 16000
+    """play audio from queue without blocking the event loop"""
+    loop = asyncio.get_running_loop()
     audio = pyaudio.PyAudio()
     stream = audio.open(
         format=pyaudio.paInt16,
         channels=1,
-        rate=rate,
+        rate=config.SAMPLE_RATE,
         output=True,
-        frames_per_buffer=chunk,
+        frames_per_buffer=config.CHUNK_SIZE,
     )
 
-    while not stop_event.is_set():
-        if not queue_chunks.empty():
-            data = queue_chunks.get()
-            stream.write(data)
-        await asyncio.sleep(0.001)
+    try:
+        while not stop_event.is_set():
+            if not queue_chunks.empty():
+                data = queue_chunks.get()
+                await loop.run_in_executor(None, stream.write, data)
+            await asyncio.sleep(0.001)
+    finally:
+        stream.close()
+        audio.terminate()
 
-    stream.close()
-    audio.terminate()
 
-
-def is_silent(data, silence_threshold=500):  # pragma: no cover
+def is_silent(data, silence_threshold=None):  # pragma: no cover
     """is chunk is silence"""
-    return np.max(np.frombuffer(data, dtype=np.int16)) < silence_threshold
+    threshold = (
+        config.SILENCE_THRESHOLD if silence_threshold is None else silence_threshold
+    )
+    return np.max(np.frombuffer(data, dtype=np.int16)) < threshold

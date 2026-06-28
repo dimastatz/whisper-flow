@@ -38,7 +38,6 @@ class ChatRoom:
     def stop_chat(self):
         """stop chat and release resources"""
         self.stop_chat_event.set()
-        assert self.stop_chat_event.is_set()
 
 
 @pytest.mark.skip(reason="requires audio hardware")

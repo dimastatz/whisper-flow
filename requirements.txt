@@ -1,17 +1,8 @@
-jiwer==3.0.4
-pytest==7.3.2
-black==23.3.0
-pandas==3.0.1
-httpx==0.27.0
-pylint==3.0.3
-PyAudio==0.2.14
+# runtime dependencies only (dev/test tooling lives in requirements-dev.txt)
 fastapi==0.108.0
-pytest-cov==4.1.0
-pytest-timeout==2.3.1
-pytest-asyncio==0.23.7
-pytest-benchmark==4.0.0
-websocket-client==1.8.0
+uvicorn[standard]==0.30.1
 python-multipart==0.0.9
 openai-whisper==20250625
-pylint-fail-under==0.3.0
-uvicorn[standard]==0.30.1
+torch
+numpy
+PyAudio==0.2.14

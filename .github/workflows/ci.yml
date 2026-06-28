@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [ "3.11", "3.12" ]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install system dependencies
+        run: sudo apt-get update && sudo apt-get install -y portaudio19-dev
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip wheel
+          pip install "setuptools<70"
+          pip install -r requirements-dev.txt
+
+      - name: Check formatting (black)
+        run: black --check whisperflow tests
+
+      - name: Lint (pylint)
+        run: pylint --fail-under=9.9 whisperflow tests
+
+      - name: Test (pytest + coverage)
+        run: pytest --ignore=tests/benchmark --ignore=tests/audio --cov-fail-under=95 --cov whisperflow -v tests
