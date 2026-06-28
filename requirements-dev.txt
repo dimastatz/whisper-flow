@@ -2,7 +2,7 @@
 -r requirements.txt
 
 # lint / format
-black==23.3.0
+black==26.5.1
 pylint==3.0.3
 pylint-fail-under==0.3.0
 
