@@ -11,14 +11,14 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v7
     - name: Build the Docker Test image
       run: docker build . --file Dockerfile.test --tag whisperflow-docker-test:$(date +%s)
 
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v7
     - name: Build the Docker with package
       run: docker build . --file Dockerfile --tag whisperflow-docker:$(date +%s)
 
