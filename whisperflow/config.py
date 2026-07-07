@@ -26,6 +26,7 @@ SILENCE_THRESHOLD = get_int("WF_SILENCE_THRESHOLD", 500)
 
 # model / transcription
 DEFAULT_MODEL = os.environ.get("WF_MODEL", "tiny.en.pt")
+DEFAULT_LANGUAGE = os.environ.get("WF_LANGUAGE", "en")
 TRANSCRIBE_TIMEOUT = get_float("WF_TRANSCRIBE_TIMEOUT", 30.0)
 MAX_WINDOW_CHUNKS = get_int("WF_MAX_WINDOW_CHUNKS", 1000)
 
