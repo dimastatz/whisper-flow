@@ -1,6 +1,6 @@
 # runtime dependencies only (dev/test tooling lives in requirements-dev.txt)
 fastapi==0.108.0
-uvicorn[standard]==0.30.1
+uvicorn[standard]==0.51.0
 python-multipart==0.0.9
 openai-whisper==20250625
 torch
