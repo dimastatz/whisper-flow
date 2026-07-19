@@ -7,7 +7,7 @@ pylint==4.0.6
 pylint-fail-under==0.3.0
 
 # test
-pytest==7.3.2
+pytest==9.1.1
 pytest-cov==7.1.0
 pytest-timeout==2.4.0
 pytest-asyncio==0.23.7
