@@ -4,12 +4,28 @@ import queue
 import asyncio
 import pytest
 import numpy as np
+import pyaudio
 import whisperflow.audio.microphone as mic
+
+
+def has_input_device():
+    """Return whether PortAudio can see any input device."""
+    audio = pyaudio.PyAudio()
+    try:
+        return any(
+            audio.get_device_info_by_index(index).get("maxInputChannels", 0) > 0
+            for index in range(audio.get_device_count())
+        )
+    finally:
+        audio.terminate()
 
 
 @pytest.mark.asyncio
 async def test_capture_mic():
     """test capturing microphone"""
+    if not has_input_device():
+        pytest.skip("PortAudio has no available input device")
+
     stop_event = asyncio.Event()
     audio_chunks = queue.Queue()
 
