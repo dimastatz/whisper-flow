@@ -1,5 +1,5 @@
 # runtime dependencies only (dev/test tooling lives in requirements-dev.txt)
-fastapi==0.108.0
+fastapi==0.141.1
 uvicorn[standard]==0.52.1
 python-multipart==0.0.32
 openai-whisper==20250625
