@@ -1,8 +1,9 @@
 """ fast api declaration """
 
+import asyncio
 import logging
 from typing import List, Optional
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, suppress
 
 from fastapi import (
     FastAPI,
@@ -27,9 +28,10 @@ sessions = {}
 
 async def stop_all_sessions():
     """stop and drop every active session (used on shutdown)"""
-    for session in list(sessions.values()):
-        await session.stop()
-    sessions.clear()
+    for session_id, session in list(sessions.items()):
+        with suppress(asyncio.CancelledError):
+            await session.stop()
+        sessions.pop(session_id, None)
 
 
 @asynccontextmanager
@@ -97,7 +99,9 @@ async def websocket_endpoint(websocket: WebSocket):
     session = None
 
     async def transcribe_async(chunks: list):
-        return await ts.transcribe_pcm_chunks_async(model, chunks)
+        return await ts.transcribe_pcm_chunks_async(
+            model, chunks, lang=config.DEFAULT_LANGUAGE
+        )
 
     async def send_back_async(data: dict):
         await websocket.send_json(data)
@@ -118,5 +122,8 @@ async def websocket_endpoint(websocket: WebSocket):
             await websocket.close()
     finally:
         if session:
-            await session.stop()
-            sessions.pop(session.id, None)
+            try:
+                with suppress(asyncio.CancelledError):
+                    await session.stop()
+            finally:
+                sessions.pop(session.id, None)
