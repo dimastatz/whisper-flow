@@ -20,13 +20,16 @@ elif [ $1 = "-local" ]; then
     echo "Running format, linter and tests"
     rm -rf .venv
 
-    # Use python3.12 if available as it's more stable for currently pinned dependencies
-    PYTHON_CMD="python3"
+    # Use Python >=3.10 for currently pinned dependencies.
     if command -v python3.12 >/dev/null 2>&1; then
-        PYTHON_CMD="python3.12"
+        python3.12 -m venv .venv
+    elif command -v python3.11 >/dev/null 2>&1; then
+        python3.11 -m venv .venv
+    elif command -v uv >/dev/null 2>&1; then
+        uv venv .venv --python 3.11 --seed
+    else
+        python3 -m venv .venv
     fi
-
-    $PYTHON_CMD -m venv .venv
     source .venv/bin/activate
     pip install --upgrade pip wheel
     # Pin setuptools < 70 for openai-whisper compatibility
@@ -63,7 +66,11 @@ elif [ $1 = "-benchmark" ]; then
     kill $(lsof -t -i:8181)
 elif [ $1 = "-run-server" ]; then
     echo "Running WhisperFlow server"
-    kill $(lsof -t -i:8181) 
+    source .venv/bin/activate
+    SERVER_PID=$(lsof -t -i:8181)
+    if [ -n "$SERVER_PID" ]; then
+        kill $SERVER_PID
+    fi
     uvicorn whisperflow.fast_server:app --host 0.0.0.0 --port 8181
 elif [ $1 = "-test-package" ]; then
     echo "Running WhisperFlow package setup"

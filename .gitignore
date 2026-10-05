@@ -162,3 +162,12 @@ cython_debug/
 .vscode/
 
 nohup.out
+
+# Local clinic runtime data
+clinic_appointments.db
+clinic_appointments.json
+clinic_appointments.csv
+
+# Locally downloaded Whisper models; tiny.en.pt is the small tracked fixture.
+whisperflow/models/base.pt
+whisperflow/models/tiny.pt
