@@ -28,12 +28,6 @@ def test_get_model_unknown():
 # --- streaming: bounding + safe transcription ---
 
 
-def test_trim_window():
-    """window is trimmed to the most recent chunks"""
-    assert st.trim_window([1, 2, 3], 2) == [2, 3]
-    assert st.trim_window([1], 2) == [1]
-
-
 @pytest.mark.asyncio
 async def test_safe_transcribe_error():
     """a failing transcriber yields None instead of crashing"""

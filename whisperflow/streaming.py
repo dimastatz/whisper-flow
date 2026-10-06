@@ -5,6 +5,7 @@ import uuid
 import asyncio
 import logging
 from queue import Queue
+from asyncio import FIRST_COMPLETED
 from typing import Callable
 
 from whisperflow import config
@@ -21,11 +22,12 @@ def get_all(queue: Queue) -> list:
     return res
 
 
-def trim_window(window: list, max_size: int) -> list:
-    """keep the window bounded to the most recent max_size chunks"""
-    if len(window) > max_size:
-        return window[-max_size:]
-    return window
+class FlushRequest:  # pylint: disable=too-few-public-methods
+    """queue marker: finalize everything queued before it"""
+
+    def __init__(self) -> None:
+        """ctor"""
+        self.done = asyncio.get_running_loop().create_future()
 
 
 async def safe_transcribe(transcriber: Callable[[list], dict], window: list):
@@ -41,6 +43,20 @@ async def safe_transcribe(transcriber: Callable[[list], dict], window: list):
     return None
 
 
+async def close_segment(
+    transcriber: Callable[[list], dict],
+    window: list,
+    segment_closed: Callable[[dict], None],
+):
+    """transcribe the whole window and send it as a final result"""
+    start = time.time()
+    data = await safe_transcribe(transcriber, window) if window else None
+    if data and data["text"]:
+        await segment_closed(
+            {"is_partial": False, "data": data, "time": (time.time() - start) * 1000}
+        )
+
+
 async def transcribe(
     should_stop: list,
     queue: Queue,
@@ -53,8 +69,18 @@ async def transcribe(
     while not should_stop[0]:
         start = time.time()
         await asyncio.sleep(0.01)
-        window.extend(get_all(queue))
-        window = trim_window(window, config.MAX_WINDOW_CHUNKS)
+
+        for item in get_all(queue):
+            if isinstance(item, FlushRequest):
+                await close_segment(transcriber, window, segment_closed)
+                window, prev_result, cycles = [], {}, 0
+                item.done.set_result(True)
+                continue
+            window.append(item)
+            if len(window) >= config.MAX_WINDOW_CHUNKS:
+                # close the segment at the cap instead of dropping its start
+                await close_segment(transcriber, window, segment_closed)
+                window, prev_result, cycles = [], {}, 0
 
         if not window:
             continue
@@ -104,6 +130,12 @@ class TranscribeSession:  # pylint: disable=too-few-public-methods
     def add_chunk(self, chunk: bytes):
         """add new chunk"""
         self.queue.put_nowait(chunk)
+
+    async def flush(self):
+        """finalize all audio queued so far and send it as a final result"""
+        request = FlushRequest()
+        self.queue.put_nowait(request)
+        await asyncio.wait({request.done, self.task}, return_when=FIRST_COMPLETED)
 
     async def stop(self):
         """stop session"""

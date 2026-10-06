@@ -45,6 +45,25 @@ Whisper Flow splits the audio stream into segments based on natural speech patte
 | we can change reality by changing our mind    |   5.05   | True      |
 | we can change reality by changing our mind    |   5.55   | False     |
 
+### WebSocket Protocol
+Clients stream audio to `/ws` as **binary** frames (16 kHz, mono, int16 PCM) and receive JSON
+results shaped like `{"is_partial": bool, "data": {"text": ...}, "time": ms}`. Optional **text**
+frames carry JSON control messages:
+
+| Message | Effect |
+| :------ | :----- |
+| `{"type": "start", ...}` | Session options. Accepted; options are not applied yet |
+| `{"type": "flush"}` | Transcribe all audio sent so far and send it as a final (`is_partial: false`) result |
+| `{"type": "stop"}` | Same as `flush`, then close the socket normally |
+
+A malformed or unknown control message gets `{"type": "error", "message": "invalid control"}`.
+Clients that only send binary frames work as before; closing the socket without `stop` discards
+audio that has not been transcribed yet.
+
+**Window cap:** a segment is limited to `WF_MAX_WINDOW_CHUNKS` chunks (default 1000, about 64 s at
+1024-sample chunks). When a segment reaches the cap it is sent as a final result and a new segment
+starts, so long utterances arrive as several finals with no audio dropped.
+
 ### Benchmarking
 The evaluation metrics for comparing the performance of Whisper Flow are Word Error Rate (WER) and latency. Latency is measured as the time between two subsequent partial results, with the goal of achieving sub-second latency. We're not starting from scratch, as several quality benchmarks have already been performed for different ASR engines. I will rely on the research article ["Benchmarking Open Source and Paid Services for Speech to Text"](https://www.frontiersin.org/articles/10.3389/fdata.2023.1210559/full) for guidance. For benchmarking the current implementation of Whisper Flow, I use [LibriSpeech](https://www.openslr.org/12).
 
@@ -247,7 +266,6 @@ Create a WebSocket endpoint for real-time streaming transcription:
 
 ```python
 from fastapi import FastAPI, WebSocket
-from starlette.websockets import WebSocketDisconnect
 import whisperflow.streaming as st
 import whisperflow.transcriber as ts
 
@@ -274,17 +292,16 @@ async def websocket_endpoint(websocket: WebSocket):
         
         # Process incoming audio chunks
         while True:
-            data = await websocket.receive_bytes()
-            session.add_chunk(data)
-            
-    except WebSocketDisconnect:
-        # Client disconnected
+            message = await websocket.receive()
+            if message["type"] == "websocket.disconnect":
+                break
+            if message.get("bytes") is not None:
+                session.add_chunk(message["bytes"])
+            elif message.get("text") == '{"type": "flush"}':
+                await session.flush()
+    finally:
+        # Client disconnected or an error occurred
         await session.stop()
-    except Exception as exception:
-        # Handle errors
-        await session.stop()
-        if websocket.client_state.name != "DISCONNECTED":
-            await websocket.close()
 ```
 
 ### API Reference
@@ -297,6 +314,7 @@ async def websocket_endpoint(websocket: WebSocket):
 **Streaming Module** (`whisperflow.streaming`):
 - `TranscribeSession(transcribe_fn, send_back_fn)` - Create a streaming session
 - `session.add_chunk(audio_data)` - Add audio chunk for processing
+- `session.flush()` - Finalize queued audio and send it as a final result
 - `session.stop()` - Stop the transcription session
 
 ### Audio Format Requirements

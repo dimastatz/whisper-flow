@@ -1,5 +1,6 @@
 """ fast api declaration """
 
+import json
 import logging
 from typing import List, Optional
 from contextlib import asynccontextmanager
@@ -14,7 +15,6 @@ from fastapi import (
     Depends,
     HTTPException,
 )
-from starlette.websockets import WebSocketDisconnect
 
 from whisperflow import __version__, config
 import whisperflow.streaming as st
@@ -83,6 +83,25 @@ def transcribe_pcm_chunk(
     return ts.transcribe_pcm_chunks(model, [content])
 
 
+async def handle_control(websocket: WebSocket, session, text: str) -> bool:
+    """apply a JSON control frame; return True when the socket should close"""
+    try:
+        message = json.loads(text)
+        kind = message.get("type")
+    except (ValueError, AttributeError):
+        kind = None
+
+    if kind in ("flush", "stop"):
+        await session.flush()
+    elif kind != "start":  # start options are accepted but not used yet
+        await websocket.send_json({"type": "error", "message": "invalid control"})
+
+    if kind == "stop":
+        await websocket.close()
+        return True
+    return False
+
+
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     """websocket streaming transcription endpoint"""
@@ -108,10 +127,13 @@ async def websocket_endpoint(websocket: WebSocket):
         sessions[session.id] = session
 
         while True:
-            data = await websocket.receive_bytes()
-            session.add_chunk(data)
-    except WebSocketDisconnect:
-        pass
+            message = await websocket.receive()
+            if message["type"] == "websocket.disconnect":
+                break
+            if message.get("bytes") is not None:
+                session.add_chunk(message["bytes"])
+            elif await handle_control(websocket, session, message.get("text", "")):
+                break
     except Exception:  # pylint: disable=broad-exception-caught  # pragma: no cover
         LOG.exception("websocket error")
         if websocket.client_state.name != "DISCONNECTED":
