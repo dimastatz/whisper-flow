@@ -31,6 +31,14 @@ def print_result(result: dict):
     print(result["is_partial"], round(result["time"], 2), result["data"]["text"])
 
 
+def transcript(df_result: pd.DataFrame) -> list:
+    """every final, plus the trailing partial if the last segment never closed"""
+    texts = list(df_result[~df_result["is_partial"].astype(bool)]["result"])
+    if len(df_result) and df_result.iloc[-1]["is_partial"]:
+        texts.append(df_result.iloc[-1]["result"])
+    return [text.strip() for text in texts]
+
+
 def test_send_chunks(url="ws://localhost:8181/ws", chunk_size=4096):
     """send chunks"""
     websocket = ws.create_connection(url)
@@ -71,10 +79,11 @@ def test_send_chunks(url="ws://localhost:8181/ws", chunk_size=4096):
     # print(df_result.to_string(justify='left', index=False))
     print("Latency Stats:\n", df_result["latency"].describe())
 
-    actual = df_result.loc[len(df_result) - 1]["result"].lower().strip()
+    actual = " ".join(transcript(df_result)).lower().strip()
     expected = resource["expected"]["final_ground_truth"].lower().strip()
 
     error = round(jw.wer(actual, expected), 2)
+    print("WER:", error)
     assert error < 0.1
     websocket.close()
 

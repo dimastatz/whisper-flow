@@ -23,11 +23,13 @@ def get_float(name: str, default: float) -> float:
 SAMPLE_RATE = get_int("WF_SAMPLE_RATE", 16000)
 CHUNK_SIZE = get_int("WF_CHUNK_SIZE", 1024)
 SILENCE_THRESHOLD = get_int("WF_SILENCE_THRESHOLD", 500)
+SILENCE_MS = get_int("WF_SILENCE_MS", 600)
 
 # model / transcription
 DEFAULT_MODEL = os.environ.get("WF_MODEL", "tiny.en.pt")
 TRANSCRIBE_TIMEOUT = get_float("WF_TRANSCRIBE_TIMEOUT", 30.0)
 MAX_WINDOW_CHUNKS = get_int("WF_MAX_WINDOW_CHUNKS", 1000)
+MAX_PROMPT_CHARS = get_int("WF_MAX_PROMPT_CHARS", 800)
 
 # server limits / auth
 MAX_UPLOAD_BYTES = get_int("WF_MAX_UPLOAD_BYTES", 25 * 1024 * 1024)
