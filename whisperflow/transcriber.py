@@ -3,6 +3,7 @@
 import os
 import asyncio
 import threading
+from functools import partial
 from typing import Optional
 
 import torch
@@ -59,7 +60,13 @@ def get_model(file_name: Optional[str] = None) -> Whisper:
 
 
 def transcribe_pcm_chunks(  # pylint: disable=too-many-arguments
-    model: Whisper, chunks: list, lang="en", temperature=0.1, log_prob=-0.5, prompt=None
+    model: Whisper,
+    chunks: list,
+    lang="en",
+    temperature=0.1,
+    log_prob=-0.5,
+    *,
+    prompt=None,
 ) -> dict:
     """transcribes pcm chunks list"""
     arr = (
@@ -76,9 +83,16 @@ def transcribe_pcm_chunks(  # pylint: disable=too-many-arguments
 
 
 async def transcribe_pcm_chunks_async(  # pylint: disable=too-many-arguments
-    model: Whisper, chunks: list, lang="en", temperature=0.1, log_prob=-0.5, prompt=None
+    model: Whisper,
+    chunks: list,
+    lang="en",
+    temperature=0.1,
+    log_prob=-0.5,
+    *,
+    prompt=None,
 ) -> dict:
     """transcribes pcm chunks async"""
+    run = partial(transcribe_pcm_chunks, prompt=prompt)
     return await asyncio.get_running_loop().run_in_executor(
-        None, transcribe_pcm_chunks, model, chunks, lang, temperature, log_prob, prompt
+        None, run, model, chunks, lang, temperature, log_prob
     )
