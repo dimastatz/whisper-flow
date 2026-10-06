@@ -299,8 +299,9 @@ async def websocket_endpoint(websocket: WebSocket):
 
 **Transcriber Module** (`whisperflow.transcriber`):
 - `get_model(file_name="tiny.en.pt")` - Load a Whisper model
-- `transcribe_pcm_chunks(model, chunks, lang="en")` - Synchronous transcription
-- `transcribe_pcm_chunks_async(model, chunks, lang="en")` - Async transcription
+- `list_models()` - Names of the model files in `whisperflow/models/`
+- `transcribe_pcm_chunks(model, chunks, lang="en", prompt=None)` - Synchronous transcription; `prompt` is an optional vocabulary hint (Whisper `initial_prompt`)
+- `transcribe_pcm_chunks_async(model, chunks, lang="en", prompt=None)` - Async transcription
 
 **Streaming Module** (`whisperflow.streaming`):
 - `TranscribeSession(transcribe_fn, send_back_fn)` - Create a streaming session
@@ -333,4 +334,5 @@ All commands are available through `./run.sh`:
 #### Roadmap
 - [X] Release v1.0-RC - Includes transcription streaming implementation.
 - [X] Release v1.1 - Bug fixes and implementation of the most requested changes.
-- [ ] Release v1.2 - Prepare the package for integration with the py-speech package.
+- [X] Release v1.2 - WebSocket control frames (`start`/`flush`/`stop`), per-session model, language and vocabulary prompt, silence endpointing, and a versioned wire protocol ([docs/protocol.md](docs/protocol.md)).
+- [ ] Release v1.3 - Prepare the package for integration with the py-speech package.

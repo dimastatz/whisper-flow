@@ -7,7 +7,7 @@ See [README.md](README.md) for end-user/usage detail; this file is the agent-fac
 
 Whisper Flow is a real-time, streaming speech-to-text service built on OpenAI Whisper and
 served via FastAPI. It splits incoming audio into temporal **tumbling windows** to emit partial
-transcripts at sub-500ms latency. Shipped as the Python package `whisperflow` (v1.1.0,
+transcripts at sub-500ms latency. Shipped as the Python package `whisperflow` (v1.2.0,
 Python 3.8+, developed/tested on 3.12).
 
 ## Commands
@@ -45,7 +45,9 @@ done.
 - [whisperflow/streaming.py](whisperflow/streaming.py) — tumbling-window streaming logic,
   `TranscribeSession`
 - [whisperflow/fast_server.py](whisperflow/fast_server.py) — FastAPI app: WebSocket `/ws`,
-  `GET /health`, `POST /transcribe_pcm_chunk`
+  `GET /health`, `GET /ready`, `POST /transcribe_pcm_chunk`
+- [docs/protocol.md](docs/protocol.md) — wire contract; bump `PROTOCOL_VERSION` in
+  `whisperflow/__init__.py` on any breaking change to it
 - [whisperflow/chat_room.py](whisperflow/chat_room.py) — multi-user chat
 - [whisperflow/audio/microphone.py](whisperflow/audio/microphone.py) — audio input
 - [whisperflow/models/](whisperflow/models/) — bundled `tiny.en.pt` model
