@@ -12,7 +12,7 @@ import whisperflow.fast_server as fs
 
 async def join_transcriber(items: list) -> dict:
     """fake transcriber: the window's chunks joined into one string"""
-    return {"text": "".join(items)}
+    return {"text": b"".join(items).decode()[::2]}
 
 
 def run_loop(queue: Queue, results: list, transcriber=join_transcriber):
@@ -34,7 +34,7 @@ async def test_window_cap_closes_segment(monkeypatch):
     """reaching the cap sends the segment as final instead of dropping its start"""
     monkeypatch.setattr(st.config, "MAX_WINDOW_CHUNKS", 3)
     queue, results = Queue(), []
-    for chunk in "abcdefg":
+    for chunk in [b"aa", b"bb", b"cc", b"dd", b"ee", b"ff", b"gg"]:
         queue.put(chunk)
 
     should_stop, task = run_loop(queue, results)
@@ -62,7 +62,7 @@ async def test_flush_sends_final_with_queued_audio():
     should_stop, task = run_loop(queue, results, slow)
 
     request = st.FlushRequest()
-    for item in ["a", "b", request, "c"]:
+    for item in [b"aa", b"bb", request, b"cc"]:
         queue.put(item)
     await request.done
 
@@ -96,8 +96,8 @@ async def test_session_flush():
         results.append(result)
 
     session = st.TranscribeSession(join_transcriber, collect)
-    session.add_chunk("x")
-    session.add_chunk("y")
+    session.add_chunk(b"xx")
+    session.add_chunk(b"yy")
     await session.flush()
     await session.stop()
 

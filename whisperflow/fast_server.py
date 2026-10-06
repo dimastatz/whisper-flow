@@ -1,6 +1,7 @@
 """ fast api declaration """
 
 import json
+import asyncio
 import logging
 from typing import List, Optional
 from contextlib import asynccontextmanager
@@ -16,13 +17,18 @@ from fastapi import (
     HTTPException,
 )
 
-from whisperflow import __version__, config
+from whisper.tokenizer import LANGUAGES
+
+from whisperflow import __version__, PROTOCOL_VERSION, config
 import whisperflow.streaming as st
 import whisperflow.transcriber as ts
 
 
 LOG = logging.getLogger(__name__)
 sessions = {}
+
+# close code for a start frame with invalid options (see docs/protocol.md)
+CLOSE_INVALID_OPTIONS = 4000
 
 
 async def stop_all_sessions():
@@ -61,6 +67,8 @@ def ready():
     return {
         "status": "ok",
         "version": __version__,
+        "protocol_version": PROTOCOL_VERSION,
+        "models": ts.list_models(),
         "model_loaded": bool(ts.models),
         "active_sessions": len(sessions),
     }
@@ -70,6 +78,7 @@ def ready():
 def transcribe_pcm_chunk(
     model_name: str = Form(...),
     files: List[UploadFile] = File(...),
+    prompt: Optional[str] = Form(default=None),
     _: None = Depends(require_api_key),
 ):
     """transcribe a single uploaded pcm chunk"""
@@ -77,23 +86,49 @@ def transcribe_pcm_chunk(
     if len(content) > config.MAX_UPLOAD_BYTES:
         raise HTTPException(status_code=413, detail="payload too large")
     try:
+        prompt = ts.check_prompt(prompt)
         model = ts.get_model(model_name)
     except ValueError as error:
         raise HTTPException(status_code=400, detail=str(error)) from error
-    return ts.transcribe_pcm_chunks(model, [content])
+    return ts.transcribe_pcm_chunks(model, [content], prompt=prompt)
 
 
-async def handle_control(websocket: WebSocket, session, text: str) -> bool:
-    """apply a JSON control frame; return True when the socket should close"""
+async def parse_start(message: dict) -> dict:
+    """validate start-frame options; raise ValueError on a bad one"""
+    options = {"prompt": ts.check_prompt(message.get("prompt"))}
+    language = message.get("language")
+    if language is not None:
+        if language not in LANGUAGES:
+            raise ValueError(f"unknown language: {language}")
+        options["lang"] = language
+    name = message.get("model")
+    if name is not None:
+        ts.resolve_model_path(str(name))
+        options["model"] = await asyncio.get_running_loop().run_in_executor(
+            None, ts.get_model, str(name)
+        )
+    return options
+
+
+async def handle_control(
+    websocket: WebSocket, session, options: dict, text: str
+) -> bool:
+    """apply a JSON control frame; return True when the socket was closed"""
     try:
         message = json.loads(text)
         kind = message.get("type")
     except (ValueError, AttributeError):
         kind = None
 
-    if kind in ("flush", "stop"):
+    if kind == "start":
+        try:
+            options.update(await parse_start(message))
+        except ValueError as error:
+            await websocket.close(code=CLOSE_INVALID_OPTIONS, reason=str(error)[:120])
+            return True
+    elif kind in ("flush", "stop"):
         await session.flush()
-    elif kind != "start":  # start options are accepted but not used yet
+    else:
         await websocket.send_json({"type": "error", "message": "invalid control"})
 
     if kind == "stop":
@@ -112,11 +147,13 @@ async def websocket_endpoint(websocket: WebSocket):
         await websocket.close(code=1013)
         return
 
-    model = ts.get_model()
+    options = {"model": ts.get_model(), "lang": "en", "prompt": None}
     session = None
 
     async def transcribe_async(chunks: list):
-        return await ts.transcribe_pcm_chunks_async(model, chunks)
+        return await ts.transcribe_pcm_chunks_async(
+            options["model"], chunks, options["lang"], prompt=options["prompt"]
+        )
 
     async def send_back_async(data: dict):
         await websocket.send_json(data)
@@ -132,7 +169,9 @@ async def websocket_endpoint(websocket: WebSocket):
                 break
             if message.get("bytes") is not None:
                 session.add_chunk(message["bytes"])
-            elif await handle_control(websocket, session, message.get("text", "")):
+            elif await handle_control(
+                websocket, session, options, message.get("text", "")
+            ):
                 break
     except Exception:  # pylint: disable=broad-exception-caught  # pragma: no cover
         LOG.exception("websocket error")

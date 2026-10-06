@@ -15,7 +15,7 @@ async def test_simple():
     """test asyncio"""
 
     queue, should_stop = Queue(), [False]
-    queue.put(1)
+    queue.put(b"\xff\x7f")
 
     async def dummy_transcriber(items: list) -> dict:
         await asyncio.sleep(0.1)

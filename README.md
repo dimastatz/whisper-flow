@@ -46,23 +46,14 @@ Whisper Flow splits the audio stream into segments based on natural speech patte
 | we can change reality by changing our mind    |   5.55   | False     |
 
 ### WebSocket Protocol
-Clients stream audio to `/ws` as **binary** frames (16 kHz, mono, int16 PCM) and receive JSON
-results shaped like `{"is_partial": bool, "data": {"text": ...}, "time": ms}`. Optional **text**
-frames carry JSON control messages:
+Clients stream audio to `/ws` as binary frames (16 kHz, mono, int16 PCM) and receive JSON results
+shaped like `{"is_partial": bool, "data": {"text": ...}, "time": ms}`. Optional JSON text frames
+control the session: `start` (model, language, vocabulary prompt), `flush` and `stop`. A segment
+becomes final after a pause in speech, when its text stops changing, at the window cap, or on
+`flush`/`stop`. `GET /ready` reports `protocol_version` and the available `models`.
 
-| Message | Effect |
-| :------ | :----- |
-| `{"type": "start", ...}` | Session options. Accepted; options are not applied yet |
-| `{"type": "flush"}` | Transcribe all audio sent so far and send it as a final (`is_partial: false`) result |
-| `{"type": "stop"}` | Same as `flush`, then close the socket normally |
-
-A malformed or unknown control message gets `{"type": "error", "message": "invalid control"}`.
-Clients that only send binary frames work as before; closing the socket without `stop` discards
-audio that has not been transcribed yet.
-
-**Window cap:** a segment is limited to `WF_MAX_WINDOW_CHUNKS` chunks (default 1000, about 64 s at
-1024-sample chunks). When a segment reaches the cap it is sent as a final result and a new segment
-starts, so long utterances arrive as several finals with no audio dropped.
+The full contract, including close codes, endpointing settings, and how to add models, is in
+[docs/protocol.md](docs/protocol.md).
 
 ### Benchmarking
 The evaluation metrics for comparing the performance of Whisper Flow are Word Error Rate (WER) and latency. Latency is measured as the time between two subsequent partial results, with the goal of achieving sub-second latency. We're not starting from scratch, as several quality benchmarks have already been performed for different ASR engines. I will rely on the research article ["Benchmarking Open Source and Paid Services for Speech to Text"](https://www.frontiersin.org/articles/10.3389/fdata.2023.1210559/full) for guidance. For benchmarking the current implementation of Whisper Flow, I use [LibriSpeech](https://www.openslr.org/12).
