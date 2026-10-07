@@ -40,3 +40,21 @@ jobs:
 
       - name: Test (pytest + coverage)
         run: pytest --ignore=tests/benchmark --ignore=tests/audio --cov-fail-under=95 --cov whisperflow -v tests
+
+  build-package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      # same build as publish.yml, so a tag push can't fail on packaging
+      - name: Build distribution
+        run: |
+          python -m pip install --upgrade pip wheel
+          pip install "setuptools<70" build twine
+          python -m build
+          twine check dist/*
