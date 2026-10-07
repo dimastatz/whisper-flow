@@ -1,9 +1,15 @@
+import re
 from pathlib import Path
 from setuptools import setup, find_packages
-from whisperflow import __version__
 
 
 this_directory = Path(__file__).parent
+# read the version without importing the package (not on sys.path in isolated builds)
+__version__ = re.search(
+    r'^__version__ = "([^"]+)"',
+    (this_directory / "whisperflow" / "__init__.py").read_text(encoding="utf-8"),
+    re.M,
+).group(1)
 long_description = (this_directory / "README.md").read_text(encoding="utf-8")
 requirements = (
     (this_directory / "requirements.txt").read_text(encoding="utf-8").splitlines()
