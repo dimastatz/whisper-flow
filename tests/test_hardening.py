@@ -1,5 +1,7 @@
 """ tests for P0/P1 hardening: validation, limits, auth, lifecycle """
 
+import json
+import time
 import asyncio
 
 import pytest
@@ -156,3 +158,31 @@ async def test_stop_all_sessions():
     await fs.stop_all_sessions()
     assert fake.stopped
     assert not fs.sessions
+
+
+def test_ws_disconnect_mid_transcription(monkeypatch):
+    """a client dropping mid-transcription doesn't leak its session (#49)"""
+
+    async def slow_transcribe(*_args, **_kwargs):
+        """stand-in transcriber that is still running when the client drops"""
+        await asyncio.sleep(0.3)
+        return {"text": "hello"}
+
+    async def closed_send_json(*_args, **_kwargs):
+        """what uvicorn does on a send after the client is gone"""
+        raise RuntimeError("Unexpected ASGI message 'websocket.send'")
+
+    send_json = fs.WebSocket.send_json
+    monkeypatch.setattr(fs.config, "MAX_SESSIONS", 1)
+    monkeypatch.setattr(fs.ts, "transcribe_pcm_chunks_async", slow_transcribe)
+    client = ut.TestClient(fs.app)
+    with client.websocket_connect("/ws") as websocket:
+        websocket.send_bytes(b"\xff\x7f" * 1600)
+        time.sleep(0.1)
+        monkeypatch.setattr(fs.WebSocket, "send_json", closed_send_json)
+    assert len(fs.sessions) == 0
+    monkeypatch.setattr(fs.WebSocket, "send_json", send_json)
+
+    with client.websocket_connect("/ws") as websocket:
+        websocket.send_text(json.dumps({"type": "stop"}))
+    assert len(fs.sessions) == 0
