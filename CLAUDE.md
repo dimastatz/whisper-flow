@@ -7,7 +7,7 @@ See [README.md](README.md) for end-user/usage detail; this file is the agent-fac
 
 Whisper Flow is a real-time, streaming speech-to-text service built on OpenAI Whisper and
 served via FastAPI. It splits incoming audio into temporal **tumbling windows** to emit partial
-transcripts at sub-500ms latency. Shipped as the Python package `whisperflow` (v1.2.0,
+transcripts at sub-500ms latency. Shipped as the Python package `whisperflow` (v1.2.1,
 Python 3.8+, developed/tested on 3.12).
 
 ## Commands

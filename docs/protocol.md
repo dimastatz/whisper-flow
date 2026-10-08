@@ -12,7 +12,7 @@ Additive changes (new optional fields or messages) do not.
 ```json
 {
   "status": "ok",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "protocol_version": 1,
   "models": ["tiny.en.pt"],
   "model_loaded": true,

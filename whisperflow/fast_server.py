@@ -9,6 +9,7 @@ from contextlib import asynccontextmanager
 from fastapi import (
     FastAPI,
     WebSocket,
+    WebSocketDisconnect,
     Form,
     File,
     UploadFile,
@@ -156,7 +157,11 @@ async def websocket_endpoint(websocket: WebSocket):
         )
 
     async def send_back_async(data: dict):
-        await websocket.send_json(data)
+        # an in-flight result can land after the client is gone; drop it
+        try:
+            await websocket.send_json(data)
+        except (RuntimeError, OSError, WebSocketDisconnect):
+            LOG.debug("dropped result for a disconnected client")
 
     try:
         await websocket.accept()
@@ -179,5 +184,7 @@ async def websocket_endpoint(websocket: WebSocket):
             await websocket.close()
     finally:
         if session:
-            await session.stop()
-            sessions.pop(session.id, None)
+            try:
+                await session.stop()
+            finally:
+                sessions.pop(session.id, None)
