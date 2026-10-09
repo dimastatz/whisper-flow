@@ -43,7 +43,7 @@ async def test_transcribe_streaming(chunk_size=4096):
         for i in range(0, len(res["audio"]), chunk_size)
     ]
 
-    async def dummy_transcriber(items: list) -> str:
+    async def dummy_transcriber(items: list, **_kwargs) -> str:
         await asyncio.sleep(0.01)
         result = ts.transcribe_pcm_chunks(model, items)
         return result
