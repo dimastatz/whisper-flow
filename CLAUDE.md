@@ -41,9 +41,12 @@ done.
 ## Architecture & key files
 
 - [whisperflow/transcriber.py](whisperflow/transcriber.py) — Whisper model loading and
-  inference: `get_model()`, `transcribe_pcm_chunks()`, `transcribe_pcm_chunks_async()`
+  inference: `get_model()` (returns a `ModelPool`), `transcribe_pcm_chunks()`,
+  `transcribe_pcm_chunks_async()`. Never call one Whisper model from two threads at once: its
+  decoder installs kv-cache hooks on the model, so concurrent calls corrupt each other. Borrow a
+  replica with `ModelPool.acquire()` (`transcribe_pcm_chunks` does this for you).
 - [whisperflow/streaming.py](whisperflow/streaming.py) — tumbling-window streaming logic,
-  `TranscribeSession`
+  `TranscribeSession`, and the committed-prefix scheme (`Segment.commit`)
 - [whisperflow/fast_server.py](whisperflow/fast_server.py) — FastAPI app: WebSocket `/ws`,
   `GET /health`, `GET /ready`, `POST /transcribe_pcm_chunk`
 - [docs/protocol.md](docs/protocol.md) — wire contract; bump `PROTOCOL_VERSION` in

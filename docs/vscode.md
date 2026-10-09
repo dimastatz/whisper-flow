@@ -4,7 +4,9 @@ A plan for a VS Code extension that streams microphone audio to a WhisperFlow se
 transcripts into the editor. This document covers positioning, the two architecture decisions that
 constrain everything else, the server-side work that must land first, and a feature roadmap.
 
-**Status:** planning. Nothing here is implemented yet.
+**Status:** implemented. The extension is [whisper-code](https://github.com/dimastatz/whisper-code)
+(see its `docs/specs`). The §4 prerequisites have all landed; §5 lists what remains on the
+extension side.
 
 ---
 
@@ -73,6 +75,8 @@ protocol as a versioned contract owned by this repo — see §4.
 
 These must land in WhisperFlow before the extension can offer a decent UX. Each is an independent
 PR; keep the gates green per [CLAUDE.md](../CLAUDE.md).
+
+Done: 1 (#39), 2 (#43), 3 (#40), 4 (committed prefix), 5 (#42), 6 (model replicas).
 
 | # | What | Why | Where |
 |---|------|-----|-------|
