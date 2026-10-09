@@ -72,12 +72,28 @@ messages. Closing the socket without `stop` discards audio not yet transcribed.
 { "is_partial": true, "data": { "text": " Reality is created", "segments": [], "language": "en" }, "time": 412.5 }
 ```
 
-- `data` is Whisper's result; `text` is the transcript of the current segment so far.
+- `data` is Whisper's result; `text` is the transcript of the current segment so far, including
+  its committed words (see below). `segments` cover only the uncommitted audio, and their
+  timestamps are relative to the start of that audio.
 - `time` is the processing time of this result in milliseconds.
 - **Partials are not monotonic.** Each partial replaces the previous one for the same segment;
   words can change or disappear. Clients must hold a pending range and replace it, never append.
   Commit text only when `is_partial` is `false`.
 - After a final, the next result belongs to a new segment.
+
+### Committed prefix
+
+Re-transcribing a whole segment every cycle gets slower as the segment grows. Once a segment's
+uncommitted audio reaches `WF_COMMIT_AFTER_MS` (default 4000), the server asks Whisper for word
+timestamps. Words that two consecutive partials agree on (ignoring case and punctuation) are
+**committed**: their audio is dropped from the window, and their text is kept and sent at the
+start of every later partial and the final. Words ending within `WF_COMMIT_MARGIN_MS` (default
+1000) of the newest audio are never committed, and at least one word always stays uncommitted.
+The committed text is also passed to Whisper as context, after the session's `prompt`.
+
+For clients this means the committed start of a long segment stops changing. Partials are still
+not monotonic after it, so the pending-range rule above is unchanged. `WF_COMMIT_PREFIX=0` turns
+committing off.
 
 ### When a segment becomes final
 
@@ -101,3 +117,8 @@ The server loads models from [whisperflow/models/](../whisperflow/models/). Only
 bundled. To add one, download a Whisper checkpoint (for example `base.en.pt` or `small.en.pt` from
 the URLs in `whisper._MODELS`) into that directory. It then appears in `GET /ready` `models`.
 Models load on first use and stay in memory.
+
+A model instance runs one transcription at a time; Whisper's decoder is not safe to share between
+threads. Sessions using the same model take turns. `WF_MODEL_REPLICAS` (default 1) loads that
+many copies of each model so that many transcriptions run in parallel, at the cost of memory per
+copy. They run on a dedicated pool of `WF_TRANSCRIBE_WORKERS` threads (default 8).

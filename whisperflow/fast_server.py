@@ -151,9 +151,15 @@ async def websocket_endpoint(websocket: WebSocket):
     options = {"model": ts.get_model(), "lang": "en", "prompt": None}
     session = None
 
-    async def transcribe_async(chunks: list):
+    async def transcribe_async(chunks: list, context: str = "", words: bool = False):
+        # the vocabulary prompt first, then the segment's committed text
+        prompt = " ".join(part for part in (options["prompt"], context) if part)
         return await ts.transcribe_pcm_chunks_async(
-            options["model"], chunks, options["lang"], prompt=options["prompt"]
+            options["model"],
+            chunks,
+            options["lang"],
+            prompt=prompt or None,
+            word_timestamps=words,
         )
 
     async def send_back_async(data: dict):

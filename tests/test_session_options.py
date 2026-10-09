@@ -196,8 +196,8 @@ def test_ws_start_options_applied(monkeypatch):
     """model, language and prompt from start are used for the session"""
     seen = {}
 
-    async def fake(model, _chunks, lang="en", prompt=None):
-        seen.update(model=model, lang=lang, prompt=prompt)
+    async def fake(model, _chunks, lang="en", prompt=None, word_timestamps=False):
+        seen.update(model=model, lang=lang, prompt=prompt, words=word_timestamps)
         return {"text": "hello"}
 
     monkeypatch.setattr(fs.ts, "transcribe_pcm_chunks_async", fake)
@@ -216,4 +216,5 @@ def test_ws_start_options_applied(monkeypatch):
         "model": ts.get_model("tiny.en.pt"),
         "lang": "en",
         "prompt": "useMemo",
+        "words": False,
     }

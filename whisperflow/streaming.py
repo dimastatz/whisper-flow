@@ -7,7 +7,8 @@ import asyncio
 import logging
 from queue import Queue
 from asyncio import FIRST_COMPLETED
-from typing import Callable
+from functools import partial
+from typing import Callable, Optional
 
 import numpy as np
 
@@ -62,13 +63,43 @@ def normalize(text: str) -> str:
     return " ".join(re.sub(r"[^\w\s]", "", text.lower()).split())
 
 
+# characters of committed text passed back to Whisper as context
+CONTEXT_CHARS = 200
+
+
+def words_of(data: dict) -> list:
+    """the word-level timestamps of a Whisper result, or [] when it has none"""
+    return [
+        word
+        for segment in data.get("segments") or []
+        for word in segment.get("words") or []
+    ]
+
+
+def common_prefix(prev: list, curr: list) -> int:
+    """number of leading words two hypotheses agree on, ignoring case/punctuation"""
+    count = 0
+    for old, new in zip(prev, curr):
+        if normalize(old["word"]) != normalize(new["word"]):
+            break
+        count += 1
+    return count
+
+
 class Segment:
-    """audio of the segment being transcribed, plus its endpointing state"""
+    """audio of the segment being transcribed, plus its endpointing state
+
+    With WF_COMMIT_PREFIX, words that two consecutive partials agree on are
+    committed: their text moves to `committed` and their audio leaves the window.
+    Each cycle then re-transcribes only the uncommitted tail instead of the whole
+    segment, and the committed words no longer change between partials.
+    """
 
     def __init__(self) -> None:
         """ctor"""
         self.window, self.prev_result, self.cycles = [], {}, 0
         self.has_speech, self.silent_ms = False, 0.0
+        self.committed, self.prev_words = "", []
 
     def add(self, chunk: bytes):
         """append a chunk, tracking trailing silence"""
@@ -92,24 +123,91 @@ class Segment:
         """true when speech was followed by WF_SILENCE_MS of silence"""
         return self.has_speech and self.silent_ms >= config.SILENCE_MS
 
+    def wants_words(self) -> bool:
+        """true when the window is long enough for committing to pay off"""
+        window_ms = sum(duration_ms(chunk) for chunk in self.window)
+        return config.COMMIT_PREFIX and window_ms >= config.COMMIT_AFTER_MS
+
+    def context(self) -> str:
+        """the end of the committed text, to keep Whisper's context across commits"""
+        return self.committed[-CONTEXT_CHARS:].strip()
+
+    def full_text(self, data: Optional[dict]) -> str:
+        """committed text followed by the transcript of the uncommitted window"""
+        return self.committed + ((data or {}).get("text") or "")
+
+    def commit(self, data: dict) -> None:
+        """commit the words this result agrees on with the previous one"""
+        words = words_of(data)
+        agreed = common_prefix(self.prev_words, words)
+        window_ms = sum(duration_ms(chunk) for chunk in self.window)
+        # keep the tail: words near the end of the window may still change
+        while (
+            agreed
+            and words[agreed - 1]["end"] * 1000 > window_ms - config.COMMIT_MARGIN_MS
+        ):
+            agreed -= 1
+        self.prev_words = words
+        if not agreed or agreed >= len(words):
+            return
+
+        # cut where the first uncommitted word starts, on a chunk boundary
+        cut_ms, dropped = words[agreed]["start"] * 1000, 0
+        while (
+            dropped < len(self.window) - 1
+            and duration_ms(self.window[dropped]) <= cut_ms
+        ):
+            cut_ms -= duration_ms(self.window[dropped])
+            dropped += 1
+        if not dropped:
+            return
+        self.committed += "".join(word["word"] for word in words[:agreed])
+        del self.window[:dropped]
+        self.prev_words = words[agreed:]
+
+
+async def transcribe_segment(
+    transcriber: Callable[..., dict], segment: Segment, words: bool = False
+):
+    """transcribe the segment's window, passing committed text as context
+
+    `words` asks for word timestamps, which committing needs. They make a call
+    slower, so short windows, where re-transcribing is cheap, go without.
+    """
+    options = {}
+    if segment.context():
+        options["context"] = segment.context()
+    if words:
+        options["words"] = True
+    return await safe_transcribe(partial(transcriber, **options), segment.window)
+
+
+def with_committed(segment: Segment, data: Optional[dict]) -> dict:
+    """the result data with the committed text in front of its transcript"""
+    data = dict(data or {"text": ""})
+    data["text"] = segment.full_text(data)
+    return data
+
 
 async def close_segment(
-    transcriber: Callable[[list], dict],
+    transcriber: Callable[..., dict],
     segment: Segment,
     segment_closed: Callable[[dict], None],
 ) -> Segment:
     """send the segment's whole window as a final result; return a fresh one"""
     start = time.time()
     if segment.has_speech:
-        data = await safe_transcribe(transcriber, segment.window)
-        if data and data["text"]:
-            await segment_closed(
-                {
-                    "is_partial": False,
-                    "data": data,
-                    "time": (time.time() - start) * 1000,
-                }
-            )
+        data = await transcribe_segment(transcriber, segment)
+        if data or segment.committed:
+            data = with_committed(segment, data)
+            if data["text"]:
+                await segment_closed(
+                    {
+                        "is_partial": False,
+                        "data": data,
+                        "time": (time.time() - start) * 1000,
+                    }
+                )
     return Segment()
 
 
@@ -143,9 +241,14 @@ async def transcribe(
         if not segment.has_speech:
             continue
 
-        data = await safe_transcribe(transcriber, segment.window)
+        data = await transcribe_segment(transcriber, segment, segment.wants_words())
         if data is None:
             continue
+        if config.COMMIT_PREFIX:
+            # this result covers the whole window, so build it before committing
+            full = with_committed(segment, data)
+            segment.commit(data)
+            data = full
 
         result = {
             "is_partial": True,
