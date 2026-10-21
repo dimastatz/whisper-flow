@@ -1,4 +1,4 @@
-""" tests for the committed-prefix scheme and the model pool """
+"""tests for the committed-prefix scheme and the model pool"""
 
 import asyncio
 import threading
@@ -11,7 +11,6 @@ import tests.utils as ut
 import whisperflow.streaming as st
 import whisperflow.transcriber as ts
 import whisperflow.fast_server as fs
-
 
 SPEECH = b"\xff\x7f" * 800  # 50 ms at full scale
 

@@ -1,4 +1,4 @@
-""" test transcriber """
+"""test transcriber"""
 
 import pytest
 from jiwer import wer

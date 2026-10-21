@@ -1,4 +1,4 @@
-""" fast api declaration """
+"""fast api declaration"""
 
 import json
 import asyncio
@@ -23,7 +23,6 @@ from whisper.tokenizer import LANGUAGES
 from whisperflow import __version__, PROTOCOL_VERSION, config
 import whisperflow.streaming as st
 import whisperflow.transcriber as ts
-
 
 LOG = logging.getLogger(__name__)
 sessions = {}

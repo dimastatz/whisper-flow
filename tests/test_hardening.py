@@ -1,4 +1,4 @@
-""" tests for P0/P1 hardening: validation, limits, auth, lifecycle """
+"""tests for P0/P1 hardening: validation, limits, auth, lifecycle"""
 
 import json
 import time
@@ -10,7 +10,6 @@ import tests.utils as ut
 import whisperflow.streaming as st
 import whisperflow.fast_server as fs
 import whisperflow.transcriber as ts
-
 
 # --- transcriber: model-name validation ---
 

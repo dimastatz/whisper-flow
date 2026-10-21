@@ -1,4 +1,4 @@
-""" transcriber """
+"""transcriber"""
 
 import os
 import copy
@@ -17,7 +17,6 @@ import whisper
 from whisper import Whisper
 
 from whisperflow import config
-
 
 models = {}
 _models_lock = threading.Lock()

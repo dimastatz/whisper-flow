@@ -1,4 +1,4 @@
-""" test runtime config helpers """
+"""test runtime config helpers"""
 
 from whisperflow import config
 

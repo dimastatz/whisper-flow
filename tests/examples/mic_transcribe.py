@@ -1,5 +1,5 @@
-""" 
-a test app that streams 
+"""
+a test app that streams
 audio  from the mic to whisper flow
 requires pip install PyAudio
 """

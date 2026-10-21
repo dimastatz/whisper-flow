@@ -1,4 +1,4 @@
-""" test chat room """
+"""test chat room"""
 
 import queue
 import asyncio

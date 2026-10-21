@@ -1,4 +1,4 @@
-""" runtime configuration sourced from environment variables """
+"""runtime configuration sourced from environment variables"""
 
 import os
 

@@ -1,4 +1,4 @@
-""" tests for session options, silence endpointing and the protocol contract """
+"""tests for session options, silence endpointing and the protocol contract"""
 
 import asyncio
 from queue import Queue

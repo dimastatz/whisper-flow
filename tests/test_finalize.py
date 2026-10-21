@@ -1,4 +1,4 @@
-""" tests for finalize-on-stop/flush and the window cap """
+"""tests for finalize-on-stop/flush and the window cap"""
 
 import asyncio
 from queue import Queue

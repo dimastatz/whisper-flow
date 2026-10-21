@@ -1,4 +1,4 @@
-""" test scenario module """
+"""test scenario module"""
 
 import asyncio
 from queue import Queue

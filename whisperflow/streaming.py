@@ -1,4 +1,4 @@
-""" streaming transcription module """
+"""streaming transcription module"""
 
 import re
 import time
@@ -13,7 +13,6 @@ from typing import Callable, Optional
 import numpy as np
 
 from whisperflow import config
-
 
 LOG = logging.getLogger(__name__)
 
