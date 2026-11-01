@@ -5,6 +5,7 @@ import time
 import asyncio
 
 import pytest
+from starlette.websockets import WebSocketDisconnect
 
 import tests.utils as ut
 import whisperflow.streaming as st
@@ -50,6 +51,58 @@ async def test_safe_transcribe_timeout(monkeypatch):
         return {"text": "x"}
 
     assert await st.safe_transcribe(slow, [b"x"]) is None
+
+
+@pytest.mark.asyncio
+async def test_queue_bounded_while_model_busy(monkeypatch):
+    """audio sent while the model is busy must not queue without limit (#64)"""
+    monkeypatch.setattr(st.config, "MAX_WINDOW_CHUNKS", 2)
+    busy = asyncio.Event()
+
+    async def slow(_window, **_kwargs):
+        busy.set()
+        await asyncio.sleep(1)
+        return {"text": "x"}
+
+    async def sink(_data):
+        pass
+
+    session = st.TranscribeSession(slow, sink)
+    session.add_chunk(b"\xff\x7f" * 1024)
+    await busy.wait()
+    for _ in range(100):
+        session.add_chunk(b"\xff\x7f" * 1024)
+
+    queued = session.queue.qsize()
+    session.task.cancel()
+    assert queued <= st.config.MAX_WINDOW_CHUNKS
+
+
+@pytest.mark.asyncio
+async def test_queue_bounded_by_bytes(monkeypatch):
+    """a chunk that would exceed WF_MAX_QUEUED_BYTES is refused"""
+    monkeypatch.setattr(st.config, "MAX_QUEUED_BYTES", 4)
+
+    async def unused(*_args, **_kwargs):
+        pass
+
+    session = st.TranscribeSession(unused, unused)
+    assert session.add_chunk(b"\x00" * 4)
+    assert not session.add_chunk(b"\x00\x00")
+    assert session.queue.queued_bytes == 4
+    session.task.cancel()
+
+
+def test_ws_overload_closes(monkeypatch):
+    """the socket closes with CLOSE_OVERLOADED when the backlog is full"""
+    monkeypatch.setattr(fs.config, "MAX_QUEUED_BYTES", 0)
+    client = ut.TestClient(fs.app)
+    with client.websocket_connect("/ws") as websocket:
+        websocket.send_bytes(b"\x00\x00")
+        with pytest.raises(WebSocketDisconnect) as error:
+            websocket.receive_json()
+    assert error.value.code == fs.CLOSE_OVERLOADED
+    assert not fs.sessions
 
 
 # --- fast_server: readiness, limits, auth ---
