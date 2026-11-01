@@ -52,6 +52,31 @@ async def test_safe_transcribe_timeout(monkeypatch):
     assert await st.safe_transcribe(slow, [b"x"]) is None
 
 
+@pytest.mark.asyncio
+async def test_queue_bounded_while_model_busy(monkeypatch):
+    """audio sent while the model is busy must not queue without limit (#64)"""
+    monkeypatch.setattr(st.config, "MAX_WINDOW_CHUNKS", 2)
+    busy = asyncio.Event()
+
+    async def slow(_window, **_kwargs):
+        busy.set()
+        await asyncio.sleep(1)
+        return {"text": "x"}
+
+    async def sink(_data):
+        pass
+
+    session = st.TranscribeSession(slow, sink)
+    session.add_chunk(b"\xff\x7f" * 1024)
+    await busy.wait()
+    for _ in range(100):
+        session.add_chunk(b"\xff\x7f" * 1024)
+
+    queued = session.queue.qsize()
+    session.task.cancel()
+    assert queued <= st.config.MAX_WINDOW_CHUNKS
+
+
 # --- fast_server: readiness, limits, auth ---
 
 
