@@ -43,4 +43,6 @@ COMMIT_MARGIN_MS = get_int("WF_COMMIT_MARGIN_MS", 1000)
 # server limits / auth
 MAX_UPLOAD_BYTES = get_int("WF_MAX_UPLOAD_BYTES", 25 * 1024 * 1024)
 MAX_SESSIONS = get_int("WF_MAX_SESSIONS", 128)
+# audio a session may hold queued while transcription catches up
+MAX_QUEUED_BYTES = get_int("WF_MAX_QUEUED_BYTES", 8 * 1024 * 1024)
 API_KEY = os.environ.get("WF_API_KEY") or None

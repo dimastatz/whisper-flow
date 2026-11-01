@@ -30,6 +30,8 @@ sessions = {}
 
 # close code for a start frame with invalid options (see docs/protocol.md)
 CLOSE_INVALID_OPTIONS = 4000
+# close code when a client sends audio faster than it can be transcribed
+CLOSE_OVERLOADED = 4001
 
 
 async def stop_all_sessions():
@@ -179,7 +181,11 @@ async def websocket_endpoint(websocket: WebSocket):
             if message["type"] == "websocket.disconnect":
                 break
             if message.get("bytes") is not None:
-                session.add_chunk(message["bytes"])
+                if not session.add_chunk(message["bytes"]):
+                    await websocket.close(
+                        code=CLOSE_OVERLOADED, reason="audio backlog full"
+                    )
+                    break
             elif await handle_control(
                 websocket, session, options, message.get("text", "")
             ):

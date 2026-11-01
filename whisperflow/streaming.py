@@ -26,6 +26,26 @@ def get_all(queue: Queue) -> list:
     return res
 
 
+class AudioQueue(Queue):
+    """queue that tracks how many audio bytes it holds"""
+
+    def __init__(self) -> None:
+        """ctor"""
+        self.queued_bytes = 0
+        super().__init__()
+
+    def _put(self, item) -> None:
+        super()._put(item)
+        if isinstance(item, bytes):
+            self.queued_bytes += len(item)
+
+    def _get(self):
+        item = super()._get()
+        if isinstance(item, bytes):
+            self.queued_bytes -= len(item)
+        return item
+
+
 class FlushRequest:  # pylint: disable=too-few-public-methods
     """queue marker: finalize everything queued before it"""
 
@@ -287,15 +307,21 @@ class TranscribeSession:  # pylint: disable=too-few-public-methods
     def __init__(self, transcribe_async, send_back_async) -> None:
         """ctor"""
         self.id = uuid.uuid4()  # pylint: disable=invalid-name
-        self.queue = Queue()
+        self.queue = AudioQueue()
         self.should_stop = [False]
         self.task = asyncio.create_task(
             transcribe(self.should_stop, self.queue, transcribe_async, send_back_async)
         )
 
-    def add_chunk(self, chunk: bytes):
-        """add new chunk"""
+    def add_chunk(self, chunk: bytes) -> bool:
+        """queue a chunk; drop it and return False when the backlog is full"""
+        if (
+            self.queue.qsize() >= config.MAX_WINDOW_CHUNKS
+            or self.queue.queued_bytes + len(chunk) > config.MAX_QUEUED_BYTES
+        ):
+            return False
         self.queue.put_nowait(chunk)
+        return True
 
     async def flush(self):
         """finalize all audio queued so far and send it as a final result"""

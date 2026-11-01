@@ -39,11 +39,17 @@ If the server sets `WF_API_KEY`, send it in the `x-api-key` header, on both HTTP
 | `1008` | Missing or wrong API key |
 | `1013` | Server is at `WF_MAX_SESSIONS` |
 | `4000` | `start` frame with invalid options; the close reason says which |
+| `4001` | Audio backlog full: the client sent audio faster than it could be transcribed |
 
 ### Client → server
 
 **Binary frames** carry audio: 16 kHz, mono, signed 16-bit little-endian PCM. Frames may be any
 length; 1024 samples (2048 bytes) per frame is the default the bundled clients use.
+
+Audio waits in a queue until it is transcribed. If transcription falls behind and the queue
+reaches `WF_MAX_WINDOW_CHUNKS` frames or `WF_MAX_QUEUED_BYTES` bytes (default 8 MiB, about
+4 minutes of audio), the server closes the socket with `4001`. The frame that hit the limit
+and any audio still queued are discarded.
 
 **Text frames** carry JSON control messages:
 
