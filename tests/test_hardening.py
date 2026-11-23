@@ -3,6 +3,8 @@
 import json
 import time
 import asyncio
+from types import SimpleNamespace
+from unittest.mock import MagicMock
 
 import pytest
 from starlette.websockets import WebSocketDisconnect
@@ -118,15 +120,50 @@ def test_ready():
     assert "active_sessions" in body
 
 
-def test_upload_too_large(monkeypatch):
-    """oversized uploads are rejected with 413"""
-    monkeypatch.setattr(fs.config, "MAX_UPLOAD_BYTES", 1)
+@pytest.mark.parametrize(("size", "expected"), [(4, 200), (5, 413)])
+def test_upload_size_boundary(monkeypatch, size, expected):
+    """uploads at the size limit pass; one byte over is rejected with 413"""
+    monkeypatch.setattr(fs.config, "MAX_UPLOAD_BYTES", 4)
     client = ut.TestClient(fs.app)
-    files = [("files", ("a.pcm", b"abcdef", "application/octet-stream"))]
+    files = [("files", ("a.pcm", b"\x00" * size, "application/octet-stream"))]
     res = client.post(
         "/transcribe_pcm_chunk", files=files, data={"model_name": "tiny.en.pt"}
     )
-    assert res.status_code == 413
+    assert res.status_code == expected
+
+
+def test_upload_read_is_bounded(monkeypatch):
+    """the endpoint reads at most limit+1 bytes, never the whole upload"""
+    limit = 4
+    monkeypatch.setattr(fs.config, "MAX_UPLOAD_BYTES", limit)
+    monkeypatch.setattr(fs.ts, "get_model", lambda _name=None: object())
+    transcribed = []
+
+    def stub_transcribe(_model, chunks, **_kwargs):
+        """capture the chunks passed to the transcriber"""
+        transcribed.append(chunks)
+        return {"text": ""}
+
+    monkeypatch.setattr(fs.ts, "transcribe_pcm_chunks", stub_transcribe)
+
+    def make_upload(data):
+        """fake upload whose file records the size passed to read()"""
+        file = MagicMock()
+        file.read.side_effect = lambda size=-1: data if size < 0 else data[:size]
+        return SimpleNamespace(file=file)
+
+    at_limit = make_upload(b"a" * limit)
+    result = fs.transcribe_pcm_chunk("tiny.en.pt", [at_limit], None, None)
+    at_limit.file.read.assert_called_once_with(limit + 1)
+    assert result == {"text": ""}
+    assert transcribed == [[b"a" * limit]]
+
+    over_limit = make_upload(b"a" * (limit + 1))
+    with pytest.raises(fs.HTTPException) as error:
+        fs.transcribe_pcm_chunk("tiny.en.pt", [over_limit], None, None)
+    assert error.value.status_code == 413
+    over_limit.file.read.assert_called_once_with(limit + 1)
+    assert len(transcribed) == 1
 
 
 def test_invalid_model_name():
