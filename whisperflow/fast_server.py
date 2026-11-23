@@ -85,7 +85,7 @@ def transcribe_pcm_chunk(
     _: None = Depends(require_api_key),
 ):
     """transcribe a single uploaded pcm chunk"""
-    content = files[0].file.read()
+    content = files[0].file.read(config.MAX_UPLOAD_BYTES + 1)
     if len(content) > config.MAX_UPLOAD_BYTES:
         raise HTTPException(status_code=413, detail="payload too large")
     try:
